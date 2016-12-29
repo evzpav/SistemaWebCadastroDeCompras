@@ -1,0 +1,79 @@
+form {
+	margin-top: 10px;
+}
+
+label {
+	font-size: 16px;
+	width: 200px;
+	display: block;
+	text-align: left;
+	margin-right: 10px;
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+
+input {
+	width: 250px;
+	border: 1px solid #666;
+	border-radius: 5px;
+	padding: 4px;
+	font-size: 16px;
+}
+
+.save {
+	font-weight: bold;
+	width: 130px;
+	padding: 5px 10px;
+	margin-left: -130px;
+	margin-top: 30px;
+	background: #cccccc;
+}
+
+table {
+	border-style: none;
+	width: 50%;
+}
+
+tr:nth-child(even) {
+	background: #FFFFFF
+}
+
+tr:nth-child(odd) {
+	background: #FFFFFF
+}
+
+tr {
+	border-style: none;
+	text-align: center;
+}
+
+
+.fornLabel{
+	font-size: 16px;
+	width: 200px;
+	display: block;
+	text-align: left;
+	margin-right: 20px;
+	margin-top: 8px;
+	margin-bottom: 8px;
+	
+}
+.checkboxDiv label {
+  display: block;
+  float: left;
+  padding-right: 10px;
+  white-space: nowrap;
+}
+.checkboxDiv input {
+	margin-left: -90px;
+  vertical-align: middle;
+}
+.checkboxDiv label span {
+	margin-left:-110px;
+  vertical-align: middle;
+}
+	
+
+
+
+

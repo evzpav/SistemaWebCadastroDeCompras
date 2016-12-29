@@ -4,13 +4,16 @@
 <html>
 
 <head>
+	
 	<title>Lista de Produtos</title>
 	
-	<link type="text/css" rel="stylesheet" href="css/style.css">
+
+<link type="text/css" rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-
+	<a href="ProdutoControllerServlet"> Produtos</a>
+	<a href="FornecedorControllerServlet"> Fornecedores</a>
 	<div id="wrapper">
 		<div id="header">
 			<h2>Lista de Produtos</h2>
@@ -40,12 +43,12 @@
 					
 					<c:url var="tempLink" value="ProdutoControllerServlet">
 						<c:param name="command" value="LOAD" />
-						<c:param name="produtoId" value="${tempProduto.idProduto}" />
+						<c:param name="idProduto" value="${tempProduto.idProduto}" />
 					</c:url>
 					
 					<c:url var="deleteLink" value="ProdutoControllerServlet">
 						<c:param name="command" value="DELETE" />
-						<c:param name="produtoId" value="${tempProduto.idProduto}" />
+						<c:param name="idProduto" value="${tempProduto.idProduto}" />
 					</c:url>
 									
 					<tr>

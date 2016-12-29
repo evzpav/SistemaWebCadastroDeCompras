@@ -1,29 +1,29 @@
-package br.com.solvus.model;
+package br.com.solvus.jdbc;
 
 import java.util.Date;
 import java.util.List;
 
 public class Fornecedor {
 
-	private  String nome;
+	private  String nomeFornecedor;
 	private  Date dataContrato;	
-	private int id;
+	private int idFornecedor;
 	private List <Produto> listagemProdutos;
 
 	
 	
 	public Fornecedor(String nome, Date dataContrato) {
-		this.nome = nome;
+		this.nomeFornecedor = nome;
 		this.dataContrato = dataContrato;
 	
 	}
 	
-	public String getNome() {
-		return nome;
+	public String getNomeFornecedor() {
+		return nomeFornecedor;
 	}
 	
-	public void setId(int id) {
-		this.id = id;
+	public void setIdFornecedor(int id) {
+		this.idFornecedor = id;
 	}
 
 
@@ -39,13 +39,13 @@ public class Fornecedor {
 		this.listagemProdutos = listagemProdutos;
 	}
 
-	public int getId() {
-		return id;
+	public int getIdFornecedor() {
+		return idFornecedor;
 	}
 
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setNomeFornecedor(String nome) {
+		this.nomeFornecedor = nome;
 	}
 
 
@@ -55,15 +55,15 @@ public class Fornecedor {
 
 	@Override
 	public String toString() {
-		return nome;
+		return nomeFornecedor;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + id;
-		result = prime * result + ((nome == null) ? 0 : nome.hashCode());
+		result = prime * result + idFornecedor;
+		result = prime * result + ((nomeFornecedor == null) ? 0 : nomeFornecedor.hashCode());
 		return result;
 	}
 
@@ -76,12 +76,12 @@ public class Fornecedor {
 		if (getClass() != obj.getClass())
 			return false;
 		Fornecedor other = (Fornecedor) obj;
-		if (id != other.id)
+		if (idFornecedor != other.idFornecedor)
 			return false;
-		if (nome == null) {
-			if (other.nome != null)
+		if (nomeFornecedor == null) {
+			if (other.nomeFornecedor != null)
 				return false;
-		} else if (!nome.equals(other.nome))
+		} else if (!nomeFornecedor.equals(other.nomeFornecedor))
 			return false;
 		return true;
 	}
