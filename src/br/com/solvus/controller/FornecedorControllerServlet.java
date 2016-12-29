@@ -180,6 +180,7 @@ public class FornecedorControllerServlet extends HttpServlet {
 		// read student info from form data
 		String nomeFornecedor = request.getParameter("nomeFornecedor");
 		String dataContratoString = request.getParameter("dataContrato");
+		System.out.println("string:"+ dataContratoString);
 		Date dataContrato = convertStringToDate(dataContratoString);
 		
 		List <Produto> listagemProdutos = new ArrayList<Produto>();

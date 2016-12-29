@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <!DOCTYPE html>
 <html>
@@ -42,6 +43,7 @@
 				<tr>
 					<th>ID Fornecedor</th>
 					<th>Nome Fornecedor</th>
+					<th>Data de Contrato</th>
 					<th>Produtos</th>
 					<th>Action</th>
 
@@ -65,7 +67,7 @@
 					<tr>
 						<td>${tempFornecedor.idFornecedor}</td>
 						<td>${tempFornecedor.nomeFornecedor}</td>
-						
+						<td><fmt:formatDate value="${tempFornecedor.dataContrato}" pattern="dd/MM/yyyy"/></td>
 						
 						<td>
 							<c:forEach var="tempProduto" items="${tempFornecedor.listagemProdutos}">
