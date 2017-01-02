@@ -1,74 +1,81 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <!DOCTYPE html>
 <html>
 
 <head>
-	
-	<title>Lista de Produtos</title>
-	
 
-<link type="text/css" rel="stylesheet" href="css/style.css">
+<jsp:include page= "css-files.jsp"/>
+
+<title>Lista de Produtos</title>
+
+
+
 </head>
 
 <body>
-	<a href="ProdutoControllerServlet"> Produtos</a>
-	<a href="FornecedorControllerServlet"> Fornecedores</a>
-	<div id="wrapper">
-		<div id="header">
-			<h2>Lista de Produtos</h2>
-		</div>
-	</div>
 
-	<div id="container">
-	
-		<div id="content">
-		
+	<div class="container-fluid">
+
+	<jsp:include page= "header.jsp"/>
+
+
+ 
+ <div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">Lista de Produtos</h1>
+   </div>
+</div>
+ 
+		<div id="container">
+
+			<div id="content">
+
+
+
+				<a href="/teste-programador1-web/add-produto-form.jsp" class="botaoAdicionar btn btn-primary btn-lg active" role="button" aria-pressed="true">Adicionar Produto</a>
+
+
+				<table class="table table-striped">
+					<thead>
+						<tr>
 					
-			<input type="button" value="Adicionar Produto"
-				onclick="window.location.href='add-produto-form.jsp'"
-				class="add-student-button"/>
-			
-			<table>
-			
-				<tr>
-					<th>ID Produto</th>
-					<th>Nome Produto</th>
-					<th>Action</th>
-					
-				
-				</tr>
-				
-				<c:forEach var="tempProduto" items="${PRODUTOS_LIST}">
-					
-					<c:url var="tempLink" value="ProdutoControllerServlet">
-						<c:param name="command" value="LOAD" />
-						<c:param name="idProduto" value="${tempProduto.idProduto}" />
-					</c:url>
-					
-					<c:url var="deleteLink" value="ProdutoControllerServlet">
-						<c:param name="command" value="DELETE" />
-						<c:param name="idProduto" value="${tempProduto.idProduto}" />
-					</c:url>
-									
-					<tr>
-						<td> ${tempProduto.idProduto} </td>
-						<td> ${tempProduto.nomeProduto} </td>
-							<td> <a href="${tempLink}">Update</a> 
-							| 
-							<a href="${deleteLink}" onclick="if (!(confirm('Tem certeza que quer deletar esse produto')) return true">Delete</a></td>
-				
-							<td> 
+							<th>ID Produto</th>
+							<th>Nome do Produto</th>
+							<th>Action</th>
 						
-						</td>
-					</tr>
-				
-				</c:forEach>
-				
-			</table>
+						</tr>	
+					</thead>
+					<tbody>
+					<c:forEach var="tempProduto" items="${PRODUTOS_LIST}">
+
+						<c:url var="tempLink" value="ProdutoControllerServlet">
+							<c:param name="command" value="LOAD" />
+							<c:param name="idProduto" value="${tempProduto.idProduto}" />
+						</c:url>
+
+						<c:url var="deleteLink" value="ProdutoControllerServlet">
+							<c:param name="command" value="DELETE" />
+							<c:param name="idProduto" value="${tempProduto.idProduto}" />
+						</c:url>
+
+						<tr>
+							<td>${tempProduto.idProduto}</td>
+							<td>${tempProduto.nomeProduto}</td>
+							<td><a href="${tempLink}">Update</a> | <a href="${deleteLink}">Delete</a></td>
+
+							<td></td>
+						</tr>
+
+					</c:forEach>
+					</tbody>
+				</table>
+
+			</div>
+
 		
-		</div>
 	
+	<jsp:include page= "footer.jsp"/>
 	</div>
 </body>
 

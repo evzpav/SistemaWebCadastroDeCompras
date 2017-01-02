@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -36,7 +37,7 @@ public class FornecedorDbUtil {
 			String sql = "select fornecedor.id_fornecedor,nome_fornecedor, nome_produto, data_contrato, produto.id_produto "
 					+ "from fornecedor "
 					+ "join fornecedor_produto as fornprod on fornecedor.id_fornecedor = fornprod.id_fornecedor "
-					+ "join produto on produto.id_produto = fornprod.id_produto " + "order by id_fornecedor";
+					+ "join produto on produto.id_produto = fornprod.id_produto " + "order by id_fornecedor, nome_produto";
 
 			myStmt = myConn.createStatement();
 
@@ -157,7 +158,9 @@ public class FornecedorDbUtil {
 
 		Connection myConn = null;
 		PreparedStatement myStmt = null;
+		PreparedStatement myStmt1 = null;
 		ResultSet myRs = null;
+		ResultSet myRs1 = null;
 		int idFornecedor;
 
 		try {
@@ -183,49 +186,86 @@ public class FornecedorDbUtil {
 			if (myRs.next()) {
 				String nomeFornecedor = myRs.getString("nome_fornecedor");
 				Date dataContrato = myRs.getDate("data_contrato");
-				// use the studentId during construction
+				
 				fornecedor = new Fornecedor(nomeFornecedor, dataContrato);
 				fornecedor.setIdFornecedor(idFornecedor);
-
+			
+				//colocar getRelationship
+				
 			} else {
 				throw new Exception("Could not find fornecedor id: " + idFornecedor);
 			}
 
-			return fornecedor;
+			
+			String sql1 = "select * from fornecedor_produto"
+					+ " join produto on produto.id_produto = fornecedor_produto.id_produto "
+					+ "where id_fornecedor = (?)";
+			
+			myStmt1 = myConn.prepareStatement(sql1);
+
+			// set params
+			myStmt1.setInt(1, idFornecedor);
+
+			// execute statement
+			myRs1 = myStmt1.executeQuery();
+		
+
+				myRs1 = myStmt1.getResultSet();
+				
+				Produto produto = null;
+				List<Produto> listagemProdutos = new ArrayList<Produto>();
+
+				while (myRs1.next()) {
+					int idProduto = myRs1.getInt("id_produto");
+					String nomeProduto = myRs1.getString("nome_produto");
+					produto = new Produto(nomeProduto);
+					produto.setIdProduto(idProduto);
+					listagemProdutos.add(produto);
+				}
+				fornecedor.setListagemProdutos(listagemProdutos);
+				
+				return fornecedor;
+						
+		
 		} finally {
 			// clean up JDBC objects
 			close(myConn, myStmt, myRs);
 		}
 	}
 
-	//
-	// public void updateProduto(Produto produto) throws Exception {
-	//
-	// Connection myConn = null;
-	// PreparedStatement myStmt = null;
-	//
-	// try {
-	// // get db connection
-	// myConn = dataSource.getConnection();
-	//
-	// // create SQL update statement
-	// String sql = "update produto set nome_produto = (?) where id_produto =
-	// (?)";
-	//
-	// // prepare statement
-	// myStmt = myConn.prepareStatement(sql);
-	//
-	// // set params
-	// myStmt.setString(1, produto.getNomeProduto());
-	// myStmt.setInt(2, produto.getIdProduto());
-	// // execute SQL statement
-	// myStmt.execute();
-	// } finally {
-	// // clean up JDBC objects
-	// close(myConn, myStmt, null);
-	// }
-	// }
-	//
+	public void updateFornecedor(Fornecedor fornecedor) throws Exception {
+
+		Connection myConn = null;
+		PreparedStatement myStmt = null;
+
+		try {
+			// get db connection
+			myConn = dataSource.getConnection();
+
+			// create SQL update statement
+			String sql = "update fornecedor set (nome_fornecedor, data_contrato) = (?,?) where id_fornecedor = (?)";
+
+			// prepare statement
+			myStmt = myConn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+			// set params
+			myStmt.setString(1, fornecedor.getNomeFornecedor());
+			myStmt.setDate(2, new Date(fornecedor.getDataContrato().getTime()));
+			myStmt.setInt(3, fornecedor.getIdFornecedor());
+			// execute SQL statement
+			myStmt.execute();
+
+			
+			for (Produto produto : fornecedor.getListagemProdutos()) {
+				this.saveRelationship(fornecedor, produto);
+			}
+
+		} finally {
+			// clean up JDBC objects
+			close(myConn, myStmt, null);
+		}
+	}
+
 	public void deleteFornecedor(int idfornecedor) throws Exception {
 
 		Connection myConn = null;
@@ -299,7 +339,7 @@ public class FornecedorDbUtil {
 
 			// execute sql statement
 			myStmt.execute();
-			
+
 		} finally {
 
 			// clean up JDBC code

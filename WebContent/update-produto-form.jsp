@@ -3,48 +3,44 @@
 <head>
 	<title> Editar Produtos</title>
 	
-	<link type="text/css" rel="stylesheet" href="css/style.css"	>
-	<link type="text/css" rel="stylesheet" href="css/add-student-style.css"	>
+<jsp:include page= "css-files.jsp"/>
+
+
 </head>
 
 
 <body>
-	<div id="wrapper">
-			<div id="header">
-				<h2> Teste programador</h2>
-			</div>
-	</div>
 
-	<div id="container">
-		<h3> Editar Produto </h3>
-	</div>	
-	
+
+	<div class="container-fluid">
+		<jsp:include page= "header.jsp"/>
+
+ <div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">Editar Produto</h1>
+   </div>
+</div>
+ 
+
 	<form action="ProdutoControllerServlet" method="GET">
 		<input type="hidden" name="command" value="UPDATE"/>
 	
-		<input type="hidden" name="produtoId" value="${PRODUTO_UPDATE.idProduto}"/>
+		<input type="hidden" name="idProduto" value="${PRODUTO_UPDATE.idProduto}"/>
 	
-		<table> 
-			<tbody>
-				<tr>
-					<td><label>Nome do Produto: </label></td>
-					<td><input type="text" name="nomeProduto" value="${PRODUTO_UPDATE.nomeProduto}"/></td>
-				</tr>
-				<tr>
-					<td><label></label></td>
-					<td><input type="submit" value="Salvar" class="save" /></td>
-				</tr>
+		<div class="col-xs-4 divLabelProduto">	
+					<label>Nome do Produto: </label>
+					<input type="text" class="form-control" name="nomeProduto" value="${PRODUTO_UPDATE.nomeProduto}"/>
 				
-			</tbody>
+					<button type="submit" class="botaoSalvar btn btn-primary btn-lg">Salvar</button> 
+					<button type="reset" class="botaoCancelar btn btn-secondary btn-lg" onclick="window.location.href='ProdutoControllerServlet'">Cancelar</button>
+		</div>		
 				
-		</table>
+		
 	</form>
 	
-	<div style="clear: both;"></div>
 	
-	<p>
-		<a href="ProdutoControllerServlet">Voltar para lista de produtos</a>
-	</p>
-		
+	
+			<jsp:include page= "footer.jsp"/>
+	</div>
 </body>
 </html>

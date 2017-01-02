@@ -29,7 +29,7 @@ public class FornecedorControllerServlet extends HttpServlet {
 
 	private FornecedorDbUtil fornecedorDbUtil;
 	private ProdutoDbUtil produtoDbUtil;
-	
+
 	@Resource(name = "jdbc/TesteProgramador1Web")
 	private DataSource dataSource;
 
@@ -41,7 +41,7 @@ public class FornecedorControllerServlet extends HttpServlet {
 		try {
 			fornecedorDbUtil = new FornecedorDbUtil(dataSource);
 			produtoDbUtil = new ProdutoDbUtil(dataSource);
-			//produtoControllerServlet = new ProdutoControllerServlet();
+			// produtoControllerServlet = new ProdutoControllerServlet();
 		} catch (Exception exc) {
 			throw new ServletException(exc);
 		}
@@ -52,7 +52,10 @@ public class FornecedorControllerServlet extends HttpServlet {
 
 		try {
 			String theCommand = request.getParameter("command");
-			System.out.println(theCommand);
+						
+			System.out.println("theCommand"+theCommand);
+		
+			
 			if (theCommand == null) {
 				theCommand = "LIST";
 
@@ -67,15 +70,17 @@ public class FornecedorControllerServlet extends HttpServlet {
 			case "Adicionar Fornecedor":
 				listProdutosFornecedor(request, response);
 				break;
+			
 
-//			 case "LOAD-PRODUTO":
-//				loadProduto(request, response);
-//			 break;
-			//
-			// case "UPDATE":
-			// updateProduto(request, response);
-			// break;
-			//
+			case "LOAD":
+				loadFornecedor(request, response);
+				
+				break;
+
+			case "UPDATE":
+				updateFornecedor(request, response);
+				break;
+
 			case "DELETE":
 				deleteFornecedor(request, response);
 				break;
@@ -90,12 +95,13 @@ public class FornecedorControllerServlet extends HttpServlet {
 
 	}
 
-//	private void loadProduto(HttpServletRequest request, HttpServletResponse response) throws Exception {
-//		
-//		String produtoId = request.getParameter("idProduto");
-//		Produto produto = produtoDbUtil.getProduto(produtoId);
-//		
-//	}
+	// private void loadProduto(HttpServletRequest request, HttpServletResponse
+	// response) throws Exception {
+	//
+	// String produtoId = request.getParameter("idProduto");
+	// Produto produto = produtoDbUtil.getProduto(produtoId);
+	//
+	// }
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -111,7 +117,7 @@ public class FornecedorControllerServlet extends HttpServlet {
 
 				addFornecedor(request, response);
 				break;
-				
+
 			default:
 
 				listFornecedores(request, response);
@@ -136,64 +142,98 @@ public class FornecedorControllerServlet extends HttpServlet {
 		listFornecedores(request, response);
 	}
 
+	private void updateFornecedor(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+		// read student info from form data
+		String nomeFornecedor = request.getParameter("nomeFornecedor");
+		String dataContratoString = request.getParameter("dataContrato");
+		
+		String fornecedorIdString = request.getParameter("idFornecedor");
+		int idFornecedor = Integer.parseInt(fornecedorIdString);
+				
+		Date dataContrato = convertStringToDate(dataContratoString);
+
+		List<Produto> listagemProdutos = new ArrayList<Produto>();
+
+		String[] produtoIdString = request.getParameterValues("idProduto");
+		for (String tempProdutoString : produtoIdString) {
+			Produto produto = produtoDbUtil.getProduto(tempProdutoString);
+			listagemProdutos.add(produto);
+			
+		}
+		
+		Fornecedor fornecedor = new Fornecedor(nomeFornecedor, dataContrato);
+		fornecedor.setListagemProdutos(listagemProdutos);
+		fornecedor.setIdFornecedor(idFornecedor);
+		
+		fornecedorDbUtil.deleteRelationship(fornecedor.getIdFornecedor());
+				
+		fornecedorDbUtil.updateFornecedor(fornecedor);
+
+		
+
+		listFornecedores(request, response);
+
+	}
+	
+	
+
 	//
-	// private void updateProduto(HttpServletRequest request,
-	// HttpServletResponse response) throws Exception {
-	//
-	// // read student info from form data
-	// String produtoIdString = request.getParameter("produtoId");
-	// int produtoId = Integer.parseInt(produtoIdString);
-	// String nomeProduto = request.getParameter("nomeProduto");
-	//
-	// // create a new student object
-	// Produto produto = new Produto(nomeProduto);
-	// produto.setIdProduto(produtoId);
-	// // perform update on database
-	// produtoDbUtil.updateProduto(produto);
-	//
-	// // send them back to the "list students" page
-	// listProdutos(request, response);
-	//
-	// }
-	//
-	// //
-	// private void loadProduto(HttpServletRequest request, HttpServletResponse
-	// response) throws Exception {
-	//
-	// // read student id from form data
-	// String produtoId = request.getParameter("produtoId");
-	//
-	// // get student from database (db util)
-	// Produto produto = produtoDbUtil.getProduto(produtoId);
-	//
-	// // place student in the request attribute
-	// request.setAttribute("PRODUTO_UPDATE", produto);
-	//
-	// // send to jsp page: update-student-form.jsp
-	// RequestDispatcher dispatcher =
-	// request.getRequestDispatcher("/update-produto-form.jsp");
-	// dispatcher.forward(request, response);
-	// }
-	//
+	private void loadFornecedor(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+		// read student id from form data
+		String fornecedorIdString = request.getParameter("idFornecedor");
+
+		// get student from database (db util)
+		Fornecedor fornecedor = fornecedorDbUtil.getFornecedor(fornecedorIdString);
+
+		List<Produto> produtos = produtoDbUtil.getProdutos();
+		
+		for (Produto produto : produtos) {
+			
+			for (Produto produtoFornecedor : fornecedor.getListagemProdutos()){
+				
+				if (produto.getIdProduto() == produtoFornecedor.getIdProduto()){
+					produto.setChecked(true);
+				}
+				
+			}
+			
+		}
+			
+
+		// add students to the request
+		request.setAttribute("PRODUTOS_LIST", produtos);
+		
+		
+		
+			// place student in the request attribute
+		request.setAttribute("FORNECEDOR_UPDATE", fornecedor);
+
+		// send to jsp page: update-student-form.jsp
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/update-fornecedor-form.jsp");
+		dispatcher.forward(request, response);
+	}
+
 	private void addFornecedor(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		// read student info from form data
 		String nomeFornecedor = request.getParameter("nomeFornecedor");
 		String dataContratoString = request.getParameter("dataContrato");
-		System.out.println("string:"+ dataContratoString);
+		System.out.println("string:" + dataContratoString);
 		Date dataContrato = convertStringToDate(dataContratoString);
-		
-		List <Produto> listagemProdutos = new ArrayList<Produto>();
-		
+
+		List<Produto> listagemProdutos = new ArrayList<Produto>();
+
 		String[] produtoIdString = request.getParameterValues("idProduto");
 		for (String tempProdutoString : produtoIdString) {
 			Produto produto = produtoDbUtil.getProduto(tempProdutoString);
 			listagemProdutos.add(produto);
 		}
-				
+
 		Fornecedor fornecedor = new Fornecedor(nomeFornecedor, dataContrato);
 		fornecedor.setListagemProdutos(listagemProdutos);
-		
+
 		fornecedorDbUtil.addFornecedor(fornecedor);
 
 		// send back to main page (the student list)
@@ -228,6 +268,8 @@ public class FornecedorControllerServlet extends HttpServlet {
 		dispatcher.forward(request, response);
 
 	}
+	
+	
 
 	// private ValidationError validateDataEntry(String nomeProduto) throws
 	// SQLException {

@@ -4,29 +4,11 @@
 <!DOCTYPE html>
 <html>
 <head>
- <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-  <link rel="stylesheet" href="/resources/demos/style.css">
-  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-   <script>
-   $( function() {
-	    $( "#datepicker" ).datepicker({"dateFormat": "dd/mm/yy"}).val();
-	  
-   });
-  </script>
-  
+
+<jsp:include page= "css-files.jsp"/>
+
+
 <title>Adicionar Fornecedor</title>
-
-
-<link type="text/css" rel="stylesheet" href="css/style.css">
-<link type="text/css" rel="stylesheet" href="css/add-item-style.css">
-
-
-
-
-
 
 
 
@@ -34,79 +16,74 @@
 
 <body>
 	
-	
-	<div id="wrapper">
-		<div id="header">
-			<h2>Teste programador</h2>
-		</div>
-	</div>
+	<div class="container-fluid">
+			<jsp:include page= "header.jsp"/>
+		
+	 <div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">Adicionar Fornecedor</h1>
+   </div>
+</div>
 
-	<div id="container">
-		<h3>Adicionar Fornecedor</h3>
-	</div>
 
 	
 	
 	<form name="myForm" action="FornecedorControllerServlet" method="POST">
 		<input type="hidden" name="command" value="ADD" />
-		<table>
-			<tbody>
-				<tr>
-					<td><label class="fornLabel">Nome do Fornecedor: </label></td>
-					<td><input type="text" name="nomeFornecedor" /></td>
-				</tr>
-				<tr>
-					<td><label class="fornLabel">Data do Contrato: </label></td>
-					<td><input type="text" id="datepicker" name="dataContrato" ></td>
-								
+			
+			<div class="col-xs-4 divLabelFornecedor">	
+					<label class="fornLabel ">Nome do Fornecedor: </label>
+					<input type="text" class="form-control" name="nomeFornecedor" />
+			</div>
+			
+			<div class="col-xs-4 divLabelDatePicker">		
+					<label class="fornLabel">Data do Contrato: </label>
+					<input type="text" class="form-control" id="datepicker" name="dataContrato" >
+			</div>						
 					
-				</tr>
 				
-				
-				<tr>
-					<td><label class="fornLabel">Produtos:</label></td>
-				</tr>
-				<tr>
-					<td></td>
 					
-					<td>
+			
+					
+				<div class="container" id="bigDivCheckbox">
+					<label class="fornLabel">Produtos:</label>
 						<c:forEach var="tempProduto" items="${PRODUTOS_LIST}">
 								
-								
-						<div class="checkboxDiv">
-							<label for="regular-checkbox" >
-								<input  type="checkbox" name="idProduto" id="regular-checkbox" value="${tempProduto.idProduto}">
+					
+						<div id="divCheckbox">
+							<label class="form-check" >
+								<input  type="checkbox" class="form-check-input" name="idProduto" id="regular-checkbox" value="${tempProduto.idProduto}">
 								
 								<span>	${tempProduto.nomeProduto}</span>
 							</label>
-								
-									
-							
+											
+						
 						</div>
 						
-						
+							
 						</c:forEach>
-					</td>
 					
-				</tr>
+				</div>		
+					
 				
-				<tr>
-					<td></td>
-					<td><input type="submit" value="Salvar" class="save" /></td>
-					<td><input type="reset" value="Cancelar" class="save" /></td>
-				</tr>
+					<div class="col-xs-4 divLabelProduto">	
+						<button type="submit" class="botaoSalvar btn btn-primary btn-lg">Salvar</button>
+						<button type="reset" class="botaoCancelar btn btn-secondary btn-lg" onclick="window.location.href='FornecedorControllerServlet'">Cancelar</button>
+					</div>	
 			
-			</tbody>
+			
 
-		</table>
+		
 	</form>
 
 
-	<div style="clear: both;"></div>
+	
 
-	<p>
-		<a href="FornecedorControllerServlet">Voltar para lista de fornecedores</a>
-	</p>
-
+	
+	
+	
+		<jsp:include page= "footer.jsp"/>
+	</div>
+	
 </body>
 </html>

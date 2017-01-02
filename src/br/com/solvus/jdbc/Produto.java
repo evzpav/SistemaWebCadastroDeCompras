@@ -4,7 +4,9 @@ public class Produto {
 
 	private String nomeProduto;
 	private int idProduto;
-
+	private  boolean checked;
+	
+	
 	public Produto(String nome) {
 		this.nomeProduto = nome;
 	
@@ -31,5 +33,17 @@ public class Produto {
 	public void setNome(String nome) {
 		this.nomeProduto = nome;
 	}
+
+	public boolean isChecked() {
+		return checked;
+	}
+
+	public void setChecked(boolean checked) {
+		this.checked = checked;
+	}
+
+	
+	
+	
 
 }

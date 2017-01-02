@@ -118,30 +118,30 @@ public class ProdutoDbUtil {
 		}
 	}
 
-	public Produto getProduto(String produtoIdString) throws Exception {
+	public Produto getProduto(String idProdutoString) throws Exception {
 
 		Produto produto = null;
 
 		Connection myConn = null;
 		PreparedStatement myStmt = null;
 		ResultSet myRs = null;
-		int produtoId;
+		int idProduto;
 
 		try {
 			// convert student id to int
-			produtoId = Integer.parseInt(produtoIdString);
+			idProduto = Integer.parseInt(idProdutoString);
 
 			// get connection to database
 			myConn = dataSource.getConnection();
 
 			// create sql to get selected student
-			String sql = "select * from produto where id_produto=?";
+			String sql = "select * from produto where id_produto=(?) order by nome_produto";
 
 			// create prepared statement
 			myStmt = myConn.prepareStatement(sql);
 
 			// set params
-			myStmt.setInt(1, produtoId);
+			myStmt.setInt(1, idProduto);
 
 			// execute statement
 			myRs = myStmt.executeQuery();
@@ -152,10 +152,10 @@ public class ProdutoDbUtil {
 
 				// use the studentId during construction
 				produto = new Produto(nomeProduto);
-				produto.setIdProduto(produtoId);
+				produto.setIdProduto(idProduto);
 
 			} else {
-				throw new Exception("Could not find produto id: " + produtoId);
+				throw new Exception("Could not find produto id: " + idProduto);
 			}
 
 			return produto;

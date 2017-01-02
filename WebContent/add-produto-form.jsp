@@ -4,59 +4,41 @@
 <head>
 <title>Adicionar Produtos</title>
 
-
-<link type="text/css" rel="stylesheet" href="css/style.css">
-<link type="text/css" rel="stylesheet" href="css/add-item-style.css">
-
-<script>
-
-</script>
-
-
+<jsp:include page= "css-files.jsp"/>
 
 
 
 </head>
 
 <body>
-	<div id="wrapper">
-		<div id="header">
-			<h2>Teste programador</h2>
-		</div>
-	</div>
 
-	<div id="container">
-		<h3>Adicionar Produto</h3>
-	</div>
+	<div class="container-fluid">
+		<jsp:include page= "header.jsp"/>
+		
+	 <div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">Adicionar Produto</h1>
+   </div>
+</div>
 
 	<form name="myForm" action="ProdutoControllerServlet" method="POST">
 		<input type="hidden" name="command" value="ADD" />
 
-		<table>
-			<tbody>
-				<tr>
-					<td><label>Nome do Produto: </label></td>
-					<td><input type="text" name="nomeProduto" /></td>
-				</tr>
-				<tr>
-					<td><label></label></td>
-
-					<td><input type="submit" value="Salvar" class="save" /></td>
-					<td><input type="reset" value="Cancelar" class="save" /></td>
+		
+					<div class="col-xs-4 divLabelProduto">	
+						<label>Nome do Produto: </label>
+						<input class="form-control" type="text" name="nomeProduto" placeholder="produto"/>
+										
 					
-				</tr>
-
-			</tbody>
-
-		</table>
+						<button type="submit" class="botaoSalvar btn btn-primary btn-lg">Salvar</button> 
+						<button type="reset" class="botaoCancelar btn btn-secondary btn-lg" onclick="window.location.href='ProdutoControllerServlet'">Cancelar</button>
+					</div>
+			
 	</form>
 
-
-	<div style="clear: both;"></div>
-
-	<p>
-		<a href="ProdutoControllerServlet">Voltar para lista de produtos</a>
-	</p>
-
+	
+		<jsp:include page= "footer.jsp"/>
+	
+	</div>
 </body>
 </html>
