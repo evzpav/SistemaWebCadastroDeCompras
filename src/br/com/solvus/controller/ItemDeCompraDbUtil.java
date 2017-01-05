@@ -10,57 +10,22 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import br.com.solvus.jdbc.ItemDeCompra;
 import br.com.solvus.jdbc.Produto;
 
-public class ProdutoDbUtil {
+public class ItemDeCompraDbUtil {
 
+	ProdutoDbUtil produtoDbUtil;
+	
 	private DataSource dataSource;
 
-	public ProdutoDbUtil(DataSource theDataSource) {
+	
+	public ItemDeCompraDbUtil(DataSource theDataSource) {
 		dataSource = theDataSource;
+		produtoDbUtil = new ProdutoDbUtil(theDataSource);
 	}
 
-	public List<Produto> getProdutos() throws Exception {
-
-		List<Produto> produtos = new ArrayList<>();
-
-		Connection myConn = null;
-		Statement myStmt = null;
-		ResultSet myRs = null;
-
-		try {
-			// get a connection
-			myConn = dataSource.getConnection();
-
-			// create sql statement
-			String sql = "select * from produto order by nome_produto";
-
-			myStmt = myConn.createStatement();
-
-			// execute query
-			myRs = myStmt.executeQuery(sql);
-
-			// process result set
-			while (myRs.next()) {
-
-				// retrieve data from result set row
-				int idProduto = myRs.getInt("id_produto");
-				String nomeProduto = myRs.getString("nome_produto");
-
-				// create new produto object
-
-				Produto tempProduto = new Produto(nomeProduto);
-				tempProduto.setIdProduto(idProduto);
-				// add it to the list of students
-				produtos.add(tempProduto);
-			}
-
-			return produtos;
-		} finally {
-			// close JDBC objects
-			close(myConn, myStmt, myRs);
-		}
-	}
+	
 
 	private void close(Connection myConn, Statement myStmt, ResultSet myRs) {
 
@@ -118,47 +83,54 @@ public class ProdutoDbUtil {
 		}
 	}
 
-	public Produto getProduto(int idProduto) throws Exception {
+	public List<ItemDeCompra> listItemDeCompra(int idCompra) throws Exception {
 
-		Produto produto = null;
-
+		List<ItemDeCompra> listaItemDeCompra = new ArrayList<ItemDeCompra>();
 		Connection myConn = null;
 		PreparedStatement myStmt = null;
 		ResultSet myRs = null;
-	//	int idProduto;
+	//	int idCompra;
 
 		try {
 			// convert student id to int
-		//	idProduto = Integer.parseInt(idProdutoString);
+		//	idCompra = Integer.parseInt(idCompraString);
 
 			// get connection to database
 			myConn = dataSource.getConnection();
 
 			// create sql to get selected student
-			String sql = "select * from produto where id_produto=(?) order by nome_produto";
+			String sql = "select distinct * from itemdecompra where id_compra = (?)";
 
 			// create prepared statement
 			myStmt = myConn.prepareStatement(sql);
 
 			// set params
-			myStmt.setInt(1, idProduto);
+			myStmt.setInt(1, idCompra);
 
 			// execute statement
 			myRs = myStmt.executeQuery();
 
 			// retrieve data from result set row
 			if (myRs.next()) {
-				String nomeProduto = myRs.getString("nome_produto");
+				
+				ItemDeCompra itemdecompra = null;
+				int idProduto = myRs.getInt("id_produto");
+				int idItemDeCompra = myRs.getInt("id_itemdecompra");
+				Integer quantidade = myRs.getInt("quantidade");
+				Double valorUnitario = myRs.getDouble("valor_unitario");
 
-				// use the studentId during construction
-				produto = new Produto(nomeProduto);
-				produto.setIdProduto(idProduto);
+				Produto produto = produtoDbUtil.getProduto(idProduto);
+				
+				itemdecompra = new ItemDeCompra(produto, quantidade, valorUnitario);
+				itemdecompra.setIdItemDeCompra(idItemDeCompra);
+				listaItemDeCompra.add(itemdecompra);
+				
 
 			} else {
-				throw new Exception("Could not find produto id: " + idProduto);
+				throw new Exception("Could not find produto id: " + idCompra);
 			}
 
-			return produto;
+			return listaItemDeCompra;
 		} finally {
 			// clean up JDBC objects
 			close(myConn, myStmt, myRs);

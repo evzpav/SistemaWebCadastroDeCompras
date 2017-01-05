@@ -140,10 +140,11 @@ public class ProdutoControllerServlet extends HttpServlet {
 	private void loadProduto(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		// read student id from form data
-		String produtoId = request.getParameter("idProduto");
+		String idProdutoString = request.getParameter("idProduto");
 
+		int idProduto = Integer.parseInt(idProdutoString);
 		// get student from database (db util)
-		Produto produto = produtoDbUtil.getProduto(produtoId);
+		Produto produto = produtoDbUtil.getProduto(idProduto);
 
 		// place student in the request attribute
 		request.setAttribute("PRODUTO_UPDATE", produto);

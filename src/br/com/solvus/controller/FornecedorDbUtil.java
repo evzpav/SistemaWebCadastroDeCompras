@@ -152,7 +152,7 @@ public class FornecedorDbUtil {
 
 	}
 
-	public Fornecedor getFornecedor(String idFornecedorString) throws Exception {
+	public Fornecedor getFornecedor(int idFornecedor) throws Exception {
 
 		Fornecedor fornecedor = null;
 
@@ -161,11 +161,11 @@ public class FornecedorDbUtil {
 		PreparedStatement myStmt1 = null;
 		ResultSet myRs = null;
 		ResultSet myRs1 = null;
-		int idFornecedor;
+		//int idFornecedor;
 
 		try {
 			// convert student id to int
-			idFornecedor = Integer.parseInt(idFornecedorString);
+		//	idFornecedor = Integer.parseInt(idFornecedorString);
 
 			// get connection to database
 			myConn = dataSource.getConnection();
@@ -412,14 +412,14 @@ public class FornecedorDbUtil {
 	public List<Produto> getProdutosFornecedor(int idFornecedor) throws Exception {
 
 		Connection myConn = null;
-		Statement myStmt = null;
 		ResultSet myRs = null;
-
+		PreparedStatement myStmt = null;
+		
 		try {
 			// get a connection
 			myConn = dataSource.getConnection();
 
-			myStmt = myConn.createStatement();
+		
 			// create sql statement
 			String sql = "select * from fornecedor_produto"
 					+ " join produto on produto.id_produto = fornecedor_produto.id_produto "
@@ -427,9 +427,9 @@ public class FornecedorDbUtil {
 
 			myStmt = myConn.prepareStatement(sql);
 
-			((PreparedStatement) myStmt).setInt(1, idFornecedor);
+			myStmt.setInt(1, idFornecedor);
 
-			myRs = myStmt.executeQuery(sql);
+			myRs = myStmt.executeQuery();
 
 			Produto produto = null;
 			List<Produto> listagemProdutos = new ArrayList<Produto>();

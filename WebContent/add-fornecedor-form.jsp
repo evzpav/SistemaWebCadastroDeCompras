@@ -38,7 +38,7 @@
 			
 			<div class="col-xs-4 divLabelDatePicker">		
 					<label class="fornLabel">Data do Contrato: </label>
-					<input type="text" class="form-control" id="datepicker" name="dataContrato" >
+					<input type="text" class="form-control datepicker" name="dataContrato" >
 			</div>						
 					
 				

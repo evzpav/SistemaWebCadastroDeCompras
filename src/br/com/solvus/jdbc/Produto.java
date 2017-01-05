@@ -30,7 +30,7 @@ public class Produto {
 		return nomeProduto;
 	}
 
-	public void setNome(String nome) {
+	public void setNomeProduto(String nome) {
 		this.nomeProduto = nome;
 	}
 

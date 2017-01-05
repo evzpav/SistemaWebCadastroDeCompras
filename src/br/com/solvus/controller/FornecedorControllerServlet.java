@@ -67,7 +67,7 @@ public class FornecedorControllerServlet extends HttpServlet {
 				listFornecedores(request, response);
 				break;
 
-			case "Adicionar Fornecedor":
+			case "IR_PARA_ADICIONAR_FORNECEDOR":
 				listProdutosFornecedor(request, response);
 				break;
 			
@@ -157,7 +157,8 @@ public class FornecedorControllerServlet extends HttpServlet {
 
 		String[] produtoIdString = request.getParameterValues("idProduto");
 		for (String tempProdutoString : produtoIdString) {
-			Produto produto = produtoDbUtil.getProduto(tempProdutoString);
+			int tempIdProduto =  Integer.parseInt(tempProdutoString);
+			Produto produto = produtoDbUtil.getProduto(tempIdProduto);
 			listagemProdutos.add(produto);
 			
 		}
@@ -182,10 +183,11 @@ public class FornecedorControllerServlet extends HttpServlet {
 	private void loadFornecedor(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		// read student id from form data
-		String fornecedorIdString = request.getParameter("idFornecedor");
+		String idFornecedorString = request.getParameter("idFornecedor");
 
-		// get student from database (db util)
-		Fornecedor fornecedor = fornecedorDbUtil.getFornecedor(fornecedorIdString);
+		int idFornecedor = Integer.parseInt(idFornecedorString);
+		
+		Fornecedor fornecedor = fornecedorDbUtil.getFornecedor(idFornecedor);
 
 		List<Produto> produtos = produtoDbUtil.getProdutos();
 		
@@ -227,7 +229,8 @@ public class FornecedorControllerServlet extends HttpServlet {
 
 		String[] produtoIdString = request.getParameterValues("idProduto");
 		for (String tempProdutoString : produtoIdString) {
-			Produto produto = produtoDbUtil.getProduto(tempProdutoString);
+				int tempIdProduto =  Integer.parseInt(tempProdutoString);
+			Produto produto = produtoDbUtil.getProduto(tempIdProduto);
 			listagemProdutos.add(produto);
 		}
 

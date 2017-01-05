@@ -1,9 +1,23 @@
 <link rel="stylesheet" href="css/bootstrap.min.css">
 
+<link href="css/bootstrap-sortable.css" rel="stylesheet" type="text/css">
+
+<script src="css/tether.min.js"></script>
+	
+<script src="css/tether.js"></script>
+
 <script src="css/jquery.min.js"></script>
 
+<script src="css/accounting.min.js"></script>
+
+<script src="css/accounting.js"></script>
+
 <script	src="css/bootstrap.min.js"	></script>
-	
+
+<script src="css/bootstrap-sortable.js"></script>
+
+
+
 <link type="text/css" rel="stylesheet" href="css/sticky-footer-navbar.css">
 
 <!--  date picker -->
@@ -15,7 +29,11 @@
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
    <script>
    $( function() {
-	    $( "#datepicker" ).datepicker({"dateFormat": "dd/mm/yy"}).val();
+	    $( ".datepicker" ).datepicker({"dateFormat": "dd/mm/yy"}).val();
 	  
    });
+   
+  
+   
   </script>
+    <!--  $( "#myselect option:selected" ).text(); -->

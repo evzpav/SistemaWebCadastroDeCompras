@@ -36,7 +36,7 @@
 					
 					
 					<button href="/teste-programador1-web/add-fornecedor-form.jsp" type="submit"
-						class="botaoAdicionar btn btn-primary btn-lg active" role="button" name="command" value="Adicionar Fornecedor"
+						class="botaoAdicionar btn btn-primary btn-lg active" role="button" name="command" value="IR_PARA_ADICIONAR_FORNECEDOR"
 						aria-pressed="true">Adicionar Fornecedor</button>
 				
 
@@ -45,14 +45,14 @@
 
 
 
-				<table class="table table-striped">
+				<table class="table table-striped sortable">
 					<thead>
 						<tr>
-							<th>ID Fornecedor</th>
+							<th data-defaultsort="disabled">ID Fornecedor</th>
 							<th>Nome Fornecedor</th>
 							<th>Data de Contrato</th>
-							<th>Produtos</th>
-							<th>Action</th>
+							<th data-defaultsort="disabled">Produtos</th>
+							<th data-defaultsort="disabled">Action</th>
 
 						</tr>
 					<thead>
