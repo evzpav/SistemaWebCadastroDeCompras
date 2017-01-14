@@ -30,12 +30,8 @@
 
 			<div id="content">
 
-
-
-
-
-				<form action="CompraControllerServlet" method="GET">
-					<input type="hidden" name="command" value="ADD_COMPRA" />
+				<form action="" >
+				
 
 					<div class="row">
 						<div class="form-group col-xs-3" id="selectFornecedor">
@@ -44,16 +40,11 @@
 
 								<c:forEach var="tempFornecedor" items="${FORNECEDORES_LIST}">
 
-									<option value="${tempFornecedor.idFornecedor}"><a href="">${tempFornecedor.nomeFornecedor}</a>
-									</option>
+									<option id="idFornecedor"
+										value="${tempFornecedor.idFornecedor}"><a href="">${tempFornecedor.nomeFornecedor}</a></option>
 								</c:forEach>
 
 							</select>
-
-
-
-
-
 
 						</div>
 
@@ -81,24 +72,21 @@
 
 						<div class="col-xs-3 divLabelQuantidade">
 							<label class="fornLabel ">Quantidade: </label> <input type="text"
-								class="form-control" name="quantidade" id="quantidade" />
+								class="form-control" name="quantidade" id="quantidade"
+								placeholder="100" />
 						</div>
 
 						<div class="col-xs-3 divLabelValor">
-							<label class="fornLabel ">Valor Unitário: </label> <input
+							<label class="fornLabel ">Valor Unitario: </label> <input
 								type="text" class="form-control" name="valorUnitario"
-								id="valorUnitario" />
+								id="valorUnitario" placeholder="0.00" />
 						</div>
 
-
-						<button class="botaoAdicionar btn btn-secondary active"
-							role="button" id="botaoAdicionarItem" aria-pressed="true">Adicionar
-							Item</button>
-
+						<div id="botaoAdicionarItem" class="col-xs-3 ">
+							<button class="btn btn-secondary active" role="button"
+								aria-pressed="true">Adicionar Item</button>
+						</div>
 					</div>
-
-
-
 
 					<table class="table table-striped">
 						<thead>
@@ -106,26 +94,24 @@
 
 								<th>Nome Produto</th>
 								<th>Quantidade</th>
-								<th>Valor Unitário</th>
-								<th></th>
+								<th>Valor Unitario</th>
+								<th>Valor Total Item</th>
 								<th>Action</th>
 
 							</tr>
 						<thead>
 						<tbody id="table_div">
 
-
-
-
-
 						</tbody>
 					</table>
-					
+
 					<div>
-						<label id="valorTotalLabel" class="fornLabel col-xs-2 divLabelProduto">Valor Total da Compra:</label>
-						<label id="valorTotal" class="fornLabel col-xs-2 divLabelProduto">0</label>
+						<label id="valorTotalLabel"
+							class="fornLabel col-xs-2 divLabelProduto">Valor Total da
+							Compra:</label> <label id="valorTotal"
+							class="fornLabel col-xs-2 divLabelProduto"></label>
 					</div>
-					
+
 					<div class="col-xs-4 divLabelProduto">
 						<button type="submit" class="botaoSalvar btn btn-primary btn-lg">Salvar
 							Compra</button>
@@ -133,12 +119,10 @@
 							class="botaoCancelar btn btn-secondary btn-lg"
 							onclick="window.location.href='CompraControllerServlet'">Cancelar</button>
 					</div>
-
-				</form>
 			</div>
+			</form>
 
 		</div>
-
 
 		<jsp:include page="footer.jsp" />
 	</div>
@@ -146,14 +130,15 @@
 
 
 <script type="text/javascript">
+	var arrayDeObjetos = [];
+	var cont = 0;
 	$idFornecedorSelecionado = $('#idFornecedor');
 
 	$idFornecedorSelecionado.change(function() {
 
 		$.ajax({
 			type : "GET",
-			url : "GetProdutosServlet?idFornecedorSelecionado="
-					+ $('#idFornecedor').val(),
+			url : "GetProdutosServlet?idFornecedorSelecionado="+ $('#idFornecedor').val(),
 			success : function(data) {
 				$('#idProduto').html(data);
 			}
@@ -165,53 +150,96 @@
 	$adicionarItem.click(function(event) {
 
 		event.preventDefault();
+		var idProduto = $("#idProduto option:selected").val();
 		var nomeProduto = $("#idProduto option:selected").text();
 		var quantidade = $("#quantidade").val();
 		var valorUnitario = $("#valorUnitario").val();
-		var data1 = [ nomeProduto, quantidade, valorUnitario ];
-		var valorTotalItem = quantidade * valorUnitario;
+		var valorTotalItem = valorUnitario * quantidade;
 
-		var valorTotalCompra = 0;
-		
-		$("#valorTotal").each(function() {
+		var objeto = {
+			"id" : cont++,
+			"idProduto" : idProduto,
+			"nomeProduto" : nomeProduto,
+			"quantidade" : quantidade,
+			"valorUnitario" : valorUnitario,
+			"valorTotalItem" : valorTotalItem
+		}
 
-		    var value = $(this).text();
-		
-		   var value2 = accounting.unformat(value,",");
-		   
-		      if(!isNaN(value2) && value2.length != 0) {
-		    	valorTotalCompra = valorTotalCompra + value2 + valorTotalItem;
-		   
-		    	
-		    }
-		});
-		
-
-		$("#table_div").append("<tr>");
-
-		$.each(data1, function(index, value2) {
-			
-			if(index==2){
-			$("#table_div").append("<td>" + accounting.formatMoney(value2, "R$", 2, ".", ",") + "</td>");
-			}else
-			{$("#table_div").append("<td>" + value2 + "</td>");}
-		});
-
-		$("#table_div").append("<button id='botaoDelete'>Delete</button>");
-
-		$("#table_div").append("</tr>");
-
-		$("#valorTotal").text(accounting.formatMoney(valorTotalCompra, "R$", 2, ".", ","));
-		
-	
+		arrayDeObjetos.push(objeto);
+		refreshTable();
 
 	});
-	
+
+	var refreshTable = function() {
+
+		$("#table_div").html('');
+
+		var valorTotalCompra = 0;
+
+		for (var i = 0; i < arrayDeObjetos.length; i++) {
+
+			var objeto = arrayDeObjetos[i];
+
+			$("#table_div").append("<tr>");
+			$("#table_div").append("<td class='nomeProd'>" + objeto.nomeProduto + "</td>");
+			$("#table_div").append("<td class='quant'>" + objeto.quantidade + "</td>");
+			$("#table_div").append("<td class='valorUnit'>"	+ accounting.formatMoney(objeto.valorUnitario,"R$", 2, ".", ",") + "</td>");
+			$("#table_div").append("<td class='valorTotalItem'>" + accounting.formatMoney(objeto.valorTotalItem,"R$", 2, ".", ",") + "</td>");
+			$("#table_div").append('<td> <input type="button" atributo-deleta="'+objeto.id+'"  id="botaoDeleteItem" class="btn-secondary " value="Delete" /> </td>');
+			$("#table_div").append("</tr>");
+
+			valorTotalCompra += objeto.valorTotalItem;
+		}
+
+		$("#valorTotal").html(	accounting.formatMoney(valorTotalCompra, "R$", 2, ".", ","));
+
+	}
+
+	$(document).on('click', '#botaoDeleteItem', function() {
+		var atributoParaDeletar = $(this).attr('atributo-deleta');
+
+		for (var i = 0; i < arrayDeObjetos.length; i++) {
+
+			var objeto = arrayDeObjetos[i];
+
+			if (objeto.id == atributoParaDeletar) {
+
+				arrayDeObjetos.splice(i, 1);
+				refreshTable();
+			}
+
+		}
+
+	});
+
+	$idFornecedorSelecionado.trigger('change');
 	
 		
 	
+	$('.botaoSalvar').click(function(event) {
+		event.preventDefault();
+		
+		var jsonDaTabela = {
+			
+				itens: arrayDeObjetos,
+				dataCompra: $('#dataCompra').val(),
+				valorTotalCompra: accounting.unformat($('#valorTotal').text(),","),
+				idFornecedor: $('#idFornecedor').val()
+		}
+		
 	
+		
+		$.ajax({
+			type : "POST",
+			url	: "CompraControllerServlet?command=ADD",
+			dataType: 'json',
+			contentType: 'application/json; charset=utf-8',
+			data: JSON.stringify(jsonDaTabela),
+			    })
+
 	
+	});
+
 	
 	
 </script>

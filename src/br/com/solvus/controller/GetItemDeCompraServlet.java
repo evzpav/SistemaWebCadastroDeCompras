@@ -17,8 +17,8 @@ import br.com.solvus.jdbc.Produto;
 /**
  * Servlet implementation class StudentControllerServlet
  */
-@WebServlet("/GetProdutosServlet")
-public class GetProdutosServlet extends HttpServlet {
+@WebServlet("/GetItemDeCompraServlet")
+public class GetItemDeCompraServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	private ProdutoDbUtil produtoDbUtil;
@@ -39,25 +39,19 @@ public class GetProdutosServlet extends HttpServlet {
 		}
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		response.setContentType("text/html;charset=UTF-8");
 		PrintWriter out = response.getWriter();
 
 		try {
-			String idFornecedorSelecionadoString = request.getParameter("idFornecedorSelecionado");
-			int idFornecedorSelecionado = Integer.parseInt(idFornecedorSelecionadoString);
+			String valorTotalCompraString = request.getParameter("valorTotal");
+	//		double valorTotalCompra = Double.parseDouble(valorTotalCompraString);
 
-			List<Produto> produtos = fornecedorDbUtil.getProdutosFornecedor(idFornecedorSelecionado);
-
-			
-
-			for (Produto produto : produtos) {
-				out.print(
-						"<option value='" + produto.getIdProduto() + " '>  " + produto.getNomeProduto() + " </option>");
-
-			}
+					
+		
+					
 		} catch (Exception exc) {
 			exc.printStackTrace();
 			out.print("Error getting product name " + exc.toString());

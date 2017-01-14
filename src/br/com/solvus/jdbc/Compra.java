@@ -3,6 +3,7 @@ package br.com.solvus.jdbc;
 import java.util.Date;
 import java.util.List;
 
+
 public class Compra {
 
 	private int idCompra;

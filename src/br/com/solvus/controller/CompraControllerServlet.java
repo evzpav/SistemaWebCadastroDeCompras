@@ -1,9 +1,13 @@
 package br.com.solvus.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -16,8 +20,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
+import com.google.gson.Gson;
+import com.sun.jmx.snmp.Timestamp;
+
 import br.com.solvus.jdbc.Compra;
 import br.com.solvus.jdbc.Fornecedor;
+import br.com.solvus.jdbc.ItemDeCompra;
+import br.com.solvus.jdbc.Produto;
+import br.com.solvus.model.DadosTabelaAddCompra;
+import br.com.solvus.model.Itens;
 
 /**
  * Servlet implementation class StudentControllerServlet
@@ -38,13 +49,13 @@ public class CompraControllerServlet extends HttpServlet {
 	public void init() throws ServletException {
 		super.init();
 
-		// create our student db util ... and pass in the conn pool / datasource
+	
 		try {
 			compraDbUtil = new CompraDbUtil(dataSource);
 			itemdecompraDbUtil = new ItemDeCompraDbUtil(dataSource);
 			fornecedorDbUtil = new FornecedorDbUtil(dataSource);
 			produtoDbUtil = new ProdutoDbUtil(dataSource);
-			// produtoControllerServlet = new ProdutoControllerServlet();
+			
 		} catch (Exception exc) {
 			throw new ServletException(exc);
 		}
@@ -119,18 +130,14 @@ public class CompraControllerServlet extends HttpServlet {
 		try {
 			// read the "command" parameter
 			String theCommand = request.getParameter("command");
-
 			// route to the appropriate method
 			switch (theCommand) {
 
-			case "ADD_ITEM_DE_COMPRA":
+			
+			case "ADD":
 
-			//	addItemDeCompra(request, response);
-				break;
-
-			case "ADD_COMPRA":
-
-				// addCompra(request, response);
+				addCompra(request, response);
+				
 				break;
 
 			default:
@@ -262,31 +269,47 @@ public class CompraControllerServlet extends HttpServlet {
 	// dispatcher.forward(request, response);
 	// }
 	//
-//	private void addCompra(HttpServletRequest request, HttpServletResponse response) throws Exception {
-//
-//		// read student info from form data
-//		String nomeFornecedor = request.getParameter("nomeFornecedor");
-//		String dataContratoString = request.getParameter("dataContrato");
-//		System.out.println("string:" + dataContratoString);
-//		Date dataContrato = convertStringToDate(dataContratoString);
-//
-//		List<Produto> listagemProdutos = new ArrayList<Produto>();
-//
-//		String[] produtoIdString = request.getParameterValues("idProduto");
-//		for (String tempProdutoString : produtoIdString) {
-//			Produto produto = produtoDbUtil.getProduto(tempProdutoString);
-//			listagemProdutos.add(produto);
-//		}
-//
-//		Fornecedor fornecedor = new Fornecedor(nomeFornecedor, dataContrato);
-//		fornecedor.setListagemProdutos(listagemProdutos);
-//
-//		fornecedorDbUtil.addFornecedor(fornecedor);
-//
-//		// send back to main page (the student list)
-//		// SEND AS REDIRECT to avoid multiple-browser reload issue
-//		response.sendRedirect(request.getContextPath() + "/FornecedorControllerServlet?command=LIST");
-//	}
+	private void addCompra(HttpServletRequest request, HttpServletResponse response) throws Exception {
+			
+		
+		String json = getBody(request);
+		
+		Gson gson = new Gson();
+		
+		System.out.println("json "+json);
+		
+		DadosTabelaAddCompra dados = gson.fromJson(json, DadosTabelaAddCompra.class);
+		
+		List<ItemDeCompra> listaItemDeCompra = new ArrayList<ItemDeCompra>();
+		Itens itens [] = dados.getItens();
+		for (Itens item : itens) {
+			
+			int idProduto = item.getIdProduto();
+			int quantidade = item.getQuantidade();
+			double valorUnitario = item.getValorUnitario();
+			
+			Produto produto = produtoDbUtil.getProduto(idProduto);
+			ItemDeCompra itemDeCompra = new ItemDeCompra(produto, quantidade, valorUnitario);
+			listaItemDeCompra.add(itemDeCompra);
+		}
+			String dataCompraString = dados.getDataCompra();
+			Date dataCompra = convertStringToDate(dataCompraString);
+			double valorTotalCompra = dados.getValorTotalCompra();
+				
+			Fornecedor fornecedor = fornecedorDbUtil.getFornecedor(dados.getIdFornecedor());
+			Compra compra = new Compra(fornecedor, dataCompra);
+			compra.setValorTotal(valorTotalCompra);
+			compra.setListaDeItemDeCompra(listaItemDeCompra);
+			
+		
+			compraDbUtil.addCompra(compra);
+			compraDbUtil.addItemDeCompra(compra);
+			compraDbUtil.saveRelationship(compra);
+			
+		response.sendRedirect(request.getContextPath() + "/CompraControllerServlet?command=LIST");
+	}
+	
+	
 //	
 //	private void addItemDeCompra(HttpServletRequest request, HttpServletResponse response) throws Exception {
 //
@@ -426,4 +449,41 @@ public class CompraControllerServlet extends HttpServlet {
 
 		return convertedDate;
 	}
+	
+	public static String getBody(HttpServletRequest request) throws IOException {
+
+	    String body = null;
+	    StringBuilder stringBuilder = new StringBuilder();
+	    BufferedReader bufferedReader = null;
+
+	    try {
+	        InputStream inputStream = request.getInputStream();
+	        if (inputStream != null) {
+	            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+	            char[] charBuffer = new char[128];
+	            int bytesRead = -1;
+	            while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
+	                stringBuilder.append(charBuffer, 0, bytesRead);
+	            }
+	        } else {
+	            stringBuilder.append("");
+	        }
+	    } catch (IOException ex) {
+	        throw ex;
+	    } finally {
+	        if (bufferedReader != null) {
+	            try {
+	                bufferedReader.close();
+	            } catch (IOException ex) {
+	                throw ex;
+	            }
+	        }
+	    }
+
+	    body = stringBuilder.toString();
+	    return body;
+	}
+	
+
+
 }
