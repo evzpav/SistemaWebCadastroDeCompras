@@ -1,7 +1,8 @@
-package br.com.solvus.jdbc;
+package br.com.solvus.model;
 
 import java.util.Date;
 import java.util.List;
+
 
 public class Fornecedor {
 
@@ -9,7 +10,7 @@ public class Fornecedor {
 	private  Date dataContrato;	
 	private int idFornecedor;
 	private List <Produto> listagemProdutos;
-
+	private List <Integer> listagemIdProdutos;
 	
 	
 	public Fornecedor(String nome, Date dataContrato) {
@@ -17,6 +18,8 @@ public class Fornecedor {
 		this.dataContrato = dataContrato;
 	
 	}
+	
+
 	
 	public String getNomeFornecedor() {
 		return nomeFornecedor;
@@ -85,6 +88,20 @@ public class Fornecedor {
 			return false;
 		return true;
 	}
+
+
+
+	public List <Integer> getListagemIdProdutos() {
+		return listagemIdProdutos;
+	}
+
+
+
+	public void setListagemIdProdutos(List <Integer> listagemIdProdutos) {
+		this.listagemIdProdutos = listagemIdProdutos;
+	}
+
+
 
 	
 	

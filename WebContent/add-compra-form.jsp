@@ -9,7 +9,7 @@
 
 <title>Adicionar Compra</title>
 
-<jsp:include page="css-files.jsp" />
+<jsp:include page="js-css-files.jsp" />
 
 </head>
 
@@ -25,13 +25,13 @@
 
 		</div>
 
+		<div id="alerta"></div>
 
 		<div id="container">
 
 			<div id="content">
 
-				<form action="" >
-				
+				<form action="">
 
 					<div class="row">
 						<div class="form-group col-xs-3" id="selectFornecedor">
@@ -53,6 +53,8 @@
 								type="text" class="form-control datepicker" name="dataCompra"
 								id="dataCompra">
 						</div>
+
+						
 					</div>
 					<div class="row">
 
@@ -138,7 +140,8 @@
 
 		$.ajax({
 			type : "GET",
-			url : "GetProdutosServlet?idFornecedorSelecionado="+ $('#idFornecedor').val(),
+			url : "GetProdutosServlet?idFornecedorSelecionado="
+					+ $('#idFornecedor').val(),
 			success : function(data) {
 				$('#idProduto').html(data);
 			}
@@ -150,26 +153,57 @@
 	$adicionarItem.click(function(event) {
 
 		event.preventDefault();
+		
 		var idProduto = $("#idProduto option:selected").val();
 		var nomeProduto = $("#idProduto option:selected").text();
 		var quantidade = $("#quantidade").val();
 		var valorUnitario = $("#valorUnitario").val();
 		var valorTotalItem = valorUnitario * quantidade;
 
-		var objeto = {
-			"id" : cont++,
-			"idProduto" : idProduto,
-			"nomeProduto" : nomeProduto,
-			"quantidade" : quantidade,
-			"valorUnitario" : valorUnitario,
-			"valorTotalItem" : valorTotalItem
+		var error = "";
+		
+		
+		if($.isNumeric(quantidade) == false){
+			error += "Quantidade invalida. <br>";
 		}
+		
+		if($.isNumeric(valorUnitario) == false){
+			error += "Valor Unitario invalido. <br>";
+		}
+			
+		
+		
+		 if (error != "") {
+             var alertaErroItem = '<div class="alert alert-danger" role="alert"><p><strong>Erro(s) ao adicionar item:</strong></p>' + error + '</div>';
+             $("#alerta").html(alertaErroItem);
+		 }else{
+			  $("#alerta").html("");
+			  
+			var objeto = {
+				"id" : cont++,
+				"idProduto" : idProduto,
+				"nomeProduto" : nomeProduto,
+				"quantidade" : quantidade,
+				"valorUnitario" : valorUnitario,
+				"valorTotalItem" : valorTotalItem
+			}
 
+		 
 		arrayDeObjetos.push(objeto);
 		refreshTable();
-
+	}
 	});
 
+	
+	function clearFields(){
+		$("#quantidade").val('');
+		$("#valorUnitario").val('');
+		$("#valorTotal").val('');
+		$("#dataCompra").val('');
+		arrayDeObjetos.length = 0;
+				
+	}
+			
 	var refreshTable = function() {
 
 		$("#table_div").html('');
@@ -181,17 +215,28 @@
 			var objeto = arrayDeObjetos[i];
 
 			$("#table_div").append("<tr>");
-			$("#table_div").append("<td class='nomeProd'>" + objeto.nomeProduto + "</td>");
-			$("#table_div").append("<td class='quant'>" + objeto.quantidade + "</td>");
-			$("#table_div").append("<td class='valorUnit'>"	+ accounting.formatMoney(objeto.valorUnitario,"R$", 2, ".", ",") + "</td>");
-			$("#table_div").append("<td class='valorTotalItem'>" + accounting.formatMoney(objeto.valorTotalItem,"R$", 2, ".", ",") + "</td>");
-			$("#table_div").append('<td> <input type="button" atributo-deleta="'+objeto.id+'"  id="botaoDeleteItem" class="btn-secondary " value="Delete" /> </td>');
+			$("#table_div").append(
+					"<td class='nomeProd'>" + objeto.nomeProduto + "</td>");
+			$("#table_div").append(
+					"<td class='quant'>" + objeto.quantidade + "</td>");
+			$("#table_div").append(
+					"<td class='valorUnit'>"
+							+ accounting.formatMoney(objeto.valorUnitario,
+									"R$", 2, ".", ",") + "</td>");
+			$("#table_div").append(
+					"<td class='valorTotalItem'>"
+							+ accounting.formatMoney(objeto.valorTotalItem,
+									"R$", 2, ".", ",") + "</td>");
+			$("#table_div")
+					.append(
+							'<td> <input type="button" atributo-deleta="'+objeto.id+'"  id="botaoDeleteItem" class="btn-secondary " value="Delete" /> </td>');
 			$("#table_div").append("</tr>");
 
 			valorTotalCompra += objeto.valorTotalItem;
 		}
 
-		$("#valorTotal").html(	accounting.formatMoney(valorTotalCompra, "R$", 2, ".", ","));
+		$("#valorTotal").html(
+				accounting.formatMoney(valorTotalCompra, "R$", 2, ".", ","));
 
 	}
 
@@ -213,35 +258,64 @@
 	});
 
 	$idFornecedorSelecionado.trigger('change');
-	
-		
-	
-	$('.botaoSalvar').click(function(event) {
-		event.preventDefault();
-		
-		var jsonDaTabela = {
-			
-				itens: arrayDeObjetos,
-				dataCompra: $('#dataCompra').val(),
-				valorTotalCompra: accounting.unformat($('#valorTotal').text(),","),
-				idFornecedor: $('#idFornecedor').val()
-		}
-		
-	
-		
-		$.ajax({
-			type : "POST",
-			url	: "CompraControllerServlet?command=ADD",
-			dataType: 'json',
-			contentType: 'application/json; charset=utf-8',
-			data: JSON.stringify(jsonDaTabela),
-			    })
 
-	
-	});
+	$('.botaoSalvar')
+			.click(
+					function(event) {
+						event.preventDefault();
+							
+						var error = "";
+						
+						if($('#dataCompra').val() == "" ){
+							error += "Data em branco. <br>";
+						}
+						
+						if(arrayDeObjetos.length == 0){
+							error += "Nenhum item adicionado a compra. <br>";
+						}
+						
+						if (error != "") {
+					         var alertaErroItem = '<div class="alert alert-danger" role="alert"><p><strong>Erro(s) ao salvar compra:</strong></p>' + error + '</div>';
+					         $("#alerta").html(alertaErroItem);
+					         					         
+						} else{
+						
+						
+						var jsonDaTabela = {
 
+							itens : arrayDeObjetos,
+							dataCompra : $('#dataCompra').val(),
+							idFornecedor : $('#idFornecedor').val()
+						}
+					
+						
+						$.ajax({
+									type : "POST",
+									url : "CompraControllerServlet?command=ADD",
+									dataType : 'json',
+									contentType : 'application/json; charset=utf-8',
+									data : JSON.stringify(jsonDaTabela),
+									success : function(data1) {
+										
+									var alertaSucesso = '<div class="alert alert-success" role="alert">  <strong>Sucesso! </strong>'+data1.msg+'.</div>';
+										$('#alerta').html(alertaSucesso);
+										clearFields();
+										refreshTable();
+									},
+									
+									error : function(data) {
+										
+									var alertaErro = '<div class="alert alert-warning" role="alert">  <strong>Warning! </strong>'+data.responseJSON.msg+'.</div>';
+									$('#alerta').html(alertaErro);
+									}
+									});
+
+						}
+						});
 	
+		
 	
+
 </script>
 
 </html>

@@ -1,7 +1,5 @@
 package br.com.solvus.model;
 
-import java.util.Date;
-
 public class DadosTabelaAddCompra {
 
 	Itens[] itens;

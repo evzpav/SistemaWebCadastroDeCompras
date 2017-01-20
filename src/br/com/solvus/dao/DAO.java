@@ -1,4 +1,4 @@
-package br.com.solvus.model;
+package br.com.solvus.dao;
 
 import java.sql.SQLException;
 import java.util.List;

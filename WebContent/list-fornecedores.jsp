@@ -9,7 +9,7 @@
 
 <title>Cadastro de Fornecedores</title>
 
-<jsp:include page= "css-files.jsp"/>
+<jsp:include page= "js-css-files.jsp" />
 
 </head>
 
@@ -24,7 +24,8 @@
 			</div>
 
 		</div>
-
+		
+	<div id="alerta"></div>
 
 		<div id="container">
 
@@ -32,7 +33,7 @@
 
 
 
-				<form action="FornecedorControllerServlet" method="GET">
+				<form action="" method="GET">
 					
 					
 					<button href="/teste-programador1-web/add-fornecedor-form.jsp" type="submit"
@@ -85,7 +86,7 @@
 
 
 								<td><a href="${tempLink}">Update</a> |
-								 <a	href="${deleteLink}">Delete</a></td>
+								 <a	href="#" class="linkDelete" data-idFornecedor="${tempFornecedor.idFornecedor}">Delete</a></td>
 
 								<td></td>
 							</tr>
@@ -101,6 +102,49 @@
 
 		<jsp:include page= "footer.jsp"/>
 	</div>
+	
+	
+	<script type="text/javascript">
+				
+		$(".linkDelete").click(function(event){
+			event.preventDefault();
+		
+			
+			
+			var jsonDeleteFornecedor = {
+					idFornecedor : $(this).attr("data-idFornecedor")
+			};
+			
+			console.log(jsonDeleteFornecedor);
+				
+			$.ajax({
+					type : "POST",
+					url : "FornecedorControllerServlet?command=DELETE",
+					dataType : 'json',
+					contentType : 'application/json; charset=utf-8',
+					data : JSON.stringify(jsonDeleteFornecedor),
+					success : function(data1) {
+						
+						console.log("deu sucesso");
+						var alertaSucesso = '<div class="alert alert-success" role="alert">  <strong>Sucesso! </strong>'+data1.msg+'</div>';
+							$('#alerta').html(alertaSucesso);
+							window.location.reload();
+					},
+					
+					error : function(data) {
+						
+						console.log("deu erro");
+						var alertaErro = '<div class="alert alert-danger" role="alert">  <strong>Erro! </strong>'+data.responseJSON.msg+'</div>';
+							$('#alerta').html(alertaErro);
+					}
+			});
+		
+		
+		});
+		
+	
+	
+	</script>
 </body>
 
 

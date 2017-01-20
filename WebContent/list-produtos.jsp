@@ -5,7 +5,7 @@
 
 <head>
 
-<jsp:include page= "css-files.jsp"/>
+<jsp:include page= "js-css-files.jsp" />
 
 <title>Lista de Produtos</title>
 
@@ -26,6 +26,8 @@
     <h1 class="display-4">Lista de Produtos</h1>
    </div>
 </div>
+
+ <div id="alerta"> </div>
  
 		<div id="container">
 
@@ -54,15 +56,12 @@
 							<c:param name="idProduto" value="${tempProduto.idProduto}" />
 						</c:url>
 
-						<c:url var="deleteLink" value="ProdutoControllerServlet">
-							<c:param name="command" value="DELETE" />
-							<c:param name="idProduto" value="${tempProduto.idProduto}" />
-						</c:url>
+					
 
 						<tr>
-							<td>${tempProduto.idProduto}</td>
+							<td >${tempProduto.idProduto}</td>
 							<td>${tempProduto.nomeProduto}</td>
-							<td><a href="${tempLink}">Update</a> | <a href="${deleteLink}">Delete</a></td>
+							<td><a href="${tempLink}">Update</a> | <a href="#" class="linkDelete" data-idProduto="${tempProduto.idProduto}">Delete</a></td>
 
 							<td></td>
 						</tr>
@@ -78,6 +77,49 @@
 	<jsp:include page= "footer.jsp"/>
 	</div>
 	</div>
+	
+	<script type="text/javascript">
+				
+		$(".linkDelete").click(function(event){
+			event.preventDefault();
+		
+			
+			
+			var jsonDeleteProduto = {
+					idProduto : $(this).attr("data-idProduto")
+			};
+			
+		
+				
+			$.ajax({
+					type : "POST",
+					url : "ProdutoControllerServlet?command=DELETE",
+					dataType : 'json',
+					contentType : 'application/json; charset=utf-8',
+					data : JSON.stringify(jsonDeleteProduto),
+					success : function(data1) {
+						
+						console.log("deu sucesso");
+						var alertaSucesso = '<div class="alert alert-success" role="alert">  <strong>Sucesso! </strong>'+data1.msg+'</div>';
+							$('#alerta').html(alertaSucesso);
+							window.location.reload();
+					},
+					
+					error : function(data) {
+						
+						console.log("deu erro");
+						var alertaErro = '<div class="alert alert-danger" role="alert">  <strong>Erro! </strong>'+data.responseJSON.msg+'</div>';
+							$('#alerta').html(alertaErro);
+					}
+			});
+		
+		
+		});
+		
+	
+	
+	</script>
+	
 </body>
 
 

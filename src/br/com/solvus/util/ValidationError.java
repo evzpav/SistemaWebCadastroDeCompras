@@ -5,7 +5,7 @@ public class ValidationError {
 	
 	private String msg;
 	
-	private boolean isValid;
+	private boolean valid = true;
 
 	public String getMsg() {
 		return msg;
@@ -16,13 +16,15 @@ public class ValidationError {
 	}
 
 	public boolean isValid() {
-		return isValid;
+		return valid;
 	}
 
 	public void setValid(boolean isValid) {
-		this.isValid = isValid;
+		this.valid = isValid;
 	}
 
+	
+	
 	
 	
 	

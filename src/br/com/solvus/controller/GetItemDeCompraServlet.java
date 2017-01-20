@@ -12,7 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
-import br.com.solvus.jdbc.Produto;
+import br.com.solvus.dao.FornecedorDbUtil;
+import br.com.solvus.dao.ProdutoDbUtil;
+import br.com.solvus.model.Produto;
 
 /**
  * Servlet implementation class StudentControllerServlet

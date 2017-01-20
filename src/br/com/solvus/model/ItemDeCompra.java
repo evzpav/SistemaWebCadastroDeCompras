@@ -1,4 +1,4 @@
-package br.com.solvus.jdbc;
+package br.com.solvus.model;
 
 public class ItemDeCompra {
 

@@ -13,17 +13,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
-import br.com.solvus.jdbc.Produto;
+import com.google.gson.Gson;
+
+import br.com.solvus.dao.ProdutoDbUtil;
+import br.com.solvus.model.DadosTabelaAddCompra;
+import br.com.solvus.model.Produto;
+import br.com.solvus.util.HttpUtil;
 import br.com.solvus.util.ValidationError;
 
-/**
- * Servlet implementation class StudentControllerServlet
- */
 @WebServlet("/ProdutoControllerServlet")
 public class ProdutoControllerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	private ProdutoDbUtil produtoDbUtil;
+
 
 	@Resource(name = "jdbc/TesteProgramador1Web")
 	private DataSource dataSource;
@@ -32,7 +35,6 @@ public class ProdutoControllerServlet extends HttpServlet {
 	public void init() throws ServletException {
 		super.init();
 
-		// create our student db util ... and pass in the conn pool / datasource
 		try {
 			produtoDbUtil = new ProdutoDbUtil(dataSource);
 		} catch (Exception exc) {
@@ -54,10 +56,9 @@ public class ProdutoControllerServlet extends HttpServlet {
 
 			case "LIST":
 				listProdutos(request, response);
-			
+
 				break;
 
-		
 			case "LOAD":
 				loadProduto(request, response);
 				break;
@@ -84,20 +85,26 @@ public class ProdutoControllerServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		try {
-			// read the "command" parameter
 			String theCommand = request.getParameter("command");
 
-			// route to the appropriate method
 			switch (theCommand) {
 
 			case "ADD":
-			
+
 				addProduto(request, response);
 				break;
-
+				
+			case "UPDATE":
+				updateProduto(request, response);
+				break;
+				
+			case "DELETE":
+				deleteProduto(request, response);
+				break;
+				
 			default:
 				listProdutos(request, response);
-				
+
 			}
 
 		} catch (Exception exc) {
@@ -108,116 +115,171 @@ public class ProdutoControllerServlet extends HttpServlet {
 
 	private void deleteProduto(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		// read student id from form data
-		String produtoIdString = request.getParameter("idProduto");
-		int produtoId = Integer.parseInt(produtoIdString);
 
-		produtoDbUtil.deleteProduto(produtoId);
+		String jsonDeleteProduto = HttpUtil.getBody(request);
 
-		// send them back to "list students" page
-		listProdutos(request, response);
+		Gson gson = new Gson();
+
+		System.out.println("json delete produto: " + jsonDeleteProduto);
+
+		Produto produtoDoJson = gson.fromJson(jsonDeleteProduto, Produto.class);
+
+		int idProduto = produtoDoJson.getIdProduto();
+
+		ValidationError validation = validateDeleteProduto(idProduto);
+
+		if (validation.isValid()) {
+			produtoDbUtil.deleteProduto(idProduto);
+			HttpUtil.setStatusSuccess(response);
+			
+		} else {
+			HttpUtil.setStatusError(response);
+		}
+		
+		System.out.println("mensagem: "+validation.getMsg());
+		
+		HttpUtil.sendJsonToJsp(response, validation);
+
+	}
+
+	private ValidationError validateDeleteProduto(int idProduto) throws SQLException {
+
+		ValidationError validation = new ValidationError();
+		if (!hasRelationshipFornecedor(idProduto)) {
+			validation.setValid(true);
+			validation.setMsg("Produto deletado com sucesso!");
+		} else {
+			validation.setValid(false);
+			validation.setMsg("Produto já está registrado em pelo menos um fornecedor.");
+		}
+		return validation;
 	}
 
 	private void updateProduto(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		// read student info from form data
-		String produtoIdString = request.getParameter("idProduto");
-		int produtoId = Integer.parseInt(produtoIdString);
-		String nomeProduto = request.getParameter("nomeProduto");
+//		String produtoIdString = request.getParameter("idProduto");
+//		int produtoId = Integer.parseInt(produtoIdString);
+//		String nomeProduto = request.getParameter("nomeProduto");
+//
+//		validateProdutoInput(nomeProduto);
+//
+//		Produto produto = new Produto(nomeProduto);
+//		produto.setIdProduto(produtoId);
+//		produtoDbUtil.updateProduto(produto);
+//
+//		listProdutos(request, response);
 
-		// create a new student object
-		Produto produto = new Produto(nomeProduto);
-		produto.setIdProduto(produtoId);
-		// perform update on database
-		produtoDbUtil.updateProduto(produto);
+		
+		String jsonUpdateProduto = HttpUtil.getBody(request);
 
-		// send them back to the "list students" page
-		listProdutos(request, response);
+		Gson gson = new Gson();
 
+		System.out.println("json update produto " + jsonUpdateProduto);
+
+		Produto produtoDoJson = gson.fromJson(jsonUpdateProduto, Produto.class);
+
+		ValidationError validation = validateProdutoInput(produtoDoJson.getNomeProduto());
+
+		if (validation.isValid()) {
+			Produto produto = new Produto(produtoDoJson.getNomeProduto());
+			produto.setIdProduto(produtoDoJson.getIdProduto());
+			produtoDbUtil.updateProduto(produto);
+			validation.setMsg("Produto atualizado com sucesso");
+			HttpUtil.setStatusSuccess(response);
+			HttpUtil.sendJsonToJsp(response, validation);
+			System.out.println("Mensagem: " + validation.getMsg());
+		} else {
+			HttpUtil.setStatusError(response);
+			HttpUtil.sendJsonToJsp(response, validation);
+			System.out.println("Mensagem: " + validation.getMsg());
+		}
+		
+		
 	}
 
-	//
 	private void loadProduto(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		// read student id from form data
 		String idProdutoString = request.getParameter("idProduto");
 
 		int idProduto = Integer.parseInt(idProdutoString);
-		// get student from database (db util)
 		Produto produto = produtoDbUtil.getProduto(idProduto);
 
-		// place student in the request attribute
 		request.setAttribute("PRODUTO_UPDATE", produto);
 
-		// send to jsp page: update-student-form.jsp
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/update-produto-form.jsp");
 		dispatcher.forward(request, response);
 	}
 
 	private void addProduto(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		// read student info from form data
-		String nomeProduto = request.getParameter("nomeProduto");
+		String jsonAddProduto = HttpUtil.getBody(request);
 
+		Gson gson = new Gson();
 
-		// create a new student object
-		Produto produto = new Produto(nomeProduto);
+		System.out.println("json add produto " + jsonAddProduto);
 
-		// add the student to the database
-		produtoDbUtil.addProduto(produto);
+		Produto produtoDoJson = gson.fromJson(jsonAddProduto, Produto.class);
 
-		// send back to main page (the student list)
-		// SEND AS REDIRECT to avoid multiple-browser reload issue
-		response.sendRedirect(request.getContextPath() + "/ProdutoControllerServlet?command=LIST");
+		ValidationError validation = validateProdutoInput(produtoDoJson.getNomeProduto());
+
+		if (validation.isValid()) {
+			Produto produto = new Produto(produtoDoJson.getNomeProduto());
+			produtoDbUtil.addProduto(produto);
+			validation.setMsg("Produto salvo com sucesso");
+			HttpUtil.setStatusSuccess(response);
+			HttpUtil.sendJsonToJsp(response, validation);
+			System.out.println("Mensagem: " + validation.getMsg());
+		} else {
+			HttpUtil.setStatusError(response);
+			HttpUtil.sendJsonToJsp(response, validation);
+			System.out.println("Mensagem: " + validation.getMsg());
+		}
 	}
 
-	
-	private void listProdutos(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ValidationError validateProdutoInput(String inputName) throws SQLException {
 
-		// get students from db util
-		List<Produto> produtos = produtoDbUtil.getProdutos();
-
-		// add students to the request
-		request.setAttribute("PRODUTOS_LIST", produtos);
-
-		// send to JSP page (view)
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/list-produtos.jsp");
-	
-		dispatcher.forward(request, response);
-		
-
-	}
-	
-
-	
-	private ValidationError validateDataEntry(String nomeProduto) throws SQLException {
 		ValidationError validation = new ValidationError();
-	
-		if (nomeProduto.isEmpty()) {
-			validation.setValid(false);
-			validation.setMsg("O nome está em branco");
-		}
-		
-		boolean isProdutoDuplicado = (produtoDbUtil.checkIfDuplicate(nomeProduto));
-		if (isProdutoDuplicado) {
-			validation.setValid(false);
-			validation.setMsg("Produto duplicado");
-		}
 
+		isProdutoDuplicate(inputName, validation);
+		isNameEmpty(inputName, validation);
+		
 		return validation;
 	}
-	
-//	private void validateToAddForm(HttpServletRequest request, HttpServletResponse response) throws Exception {
-//
-//		String nomeProduto = request.getParameter("nomeProduto");
-//		
-//		ValidationError validationToForm = validateDataEntry(nomeProduto);
-//		
-//		request.setAttribute("VALIDATION", validationToForm);
-//
-//		RequestDispatcher dispatcher = request.getRequestDispatcher("/add-produto-form.jsp");
-//		dispatcher.forward(request, response);
-//	}
 
+	private void isProdutoDuplicate(String nomeProduto, ValidationError validation) throws SQLException {
+
+		boolean nomeDuplicado = produtoDbUtil.checkIfDuplicate(nomeProduto);
+		if (nomeDuplicado) {
+			validation.setValid(false);
+			validation.setMsg("O nome já existe.");
+
+		}
+	}
+
+	public void isNameEmpty(String inputName, ValidationError validation) {
+		if (inputName.isEmpty()) {
+			validation.setValid(false);
+			validation.setMsg("Preencha um nome válido.");
+
+		}
+	}
+
+	private void listProdutos(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+		List<Produto> produtos = produtoDbUtil.getProdutos();
+
+		request.setAttribute("PRODUTOS_LIST", produtos);
+
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/list-produtos.jsp");
+
+		dispatcher.forward(request, response);
+
+	}
+
+	private boolean hasRelationshipFornecedor(int idProduto) throws SQLException {
+
+		return produtoDbUtil.hasRelationshipFornecedor(idProduto);
+
+	}
 
 }

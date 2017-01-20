@@ -1,4 +1,4 @@
-package br.com.solvus.controller;
+package br.com.solvus.dao;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -11,10 +11,10 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import br.com.solvus.jdbc.Compra;
-import br.com.solvus.jdbc.Fornecedor;
-import br.com.solvus.jdbc.ItemDeCompra;
-import br.com.solvus.jdbc.Produto;
+import br.com.solvus.model.Compra;
+import br.com.solvus.model.Fornecedor;
+import br.com.solvus.model.ItemDeCompra;
+import br.com.solvus.model.Produto;
 
 public class CompraDbUtil {
 
@@ -95,7 +95,6 @@ public class CompraDbUtil {
 
 			return listaCompra;
 		} finally {
-			// close JDBC objects
 			close(myConn, myStmt, myRs);
 		}
 	}
@@ -112,8 +111,8 @@ public class CompraDbUtil {
 			}
 
 			if (myConn != null) {
-				myConn.close(); // doesn't really close it ... just puts back in
-								// connection pool
+				myConn.close();
+
 			}
 		} catch (Exception exc) {
 			exc.printStackTrace();
@@ -129,14 +128,9 @@ public class CompraDbUtil {
 		Statement myStmt = null;
 		ResultSet myRs = null;
 
-		// Integer idCompra= null;
-
 		try {
-			// get a connection
 			myConn = dataSource.getConnection();
 
-			// idCompra = Integer.parseInt(idCompraString);
-			// create sql statement
 			String sql = "select * from compra where id_compra=(?)";
 
 			myStmt = myConn.prepareStatement(sql);
@@ -162,7 +156,6 @@ public class CompraDbUtil {
 
 			return compra;
 		} finally {
-			// close JDBC objects
 			close(myConn, myStmt, myRs);
 		}
 	}
@@ -173,20 +166,16 @@ public class CompraDbUtil {
 		PreparedStatement myStmt = null;
 
 		try {
-			// get db connection
 			myConn = dataSource.getConnection();
 
-			// create sql for insert
 			String sql = "insert into compra(id_fornecedor, data_compra, valor_total) values (?,?,?)";
 
 			myStmt = myConn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-			// set the param values for the student
 			myStmt.setInt(1, compra.getFornecedor().getIdFornecedor());
 			myStmt.setDate(2, new Date(compra.getDataCompra().getTime()));
 			myStmt.setDouble(3, compra.getValorTotal());
 
-			// execute sql insert
 			myStmt.execute();
 
 			try (ResultSet keys = myStmt.getGeneratedKeys()) {
@@ -196,7 +185,6 @@ public class CompraDbUtil {
 
 			}
 		} finally {
-			// clean up JDBC objects
 			close(myConn, myStmt, null);
 		}
 
@@ -212,7 +200,7 @@ public class CompraDbUtil {
 			String sql = "insert into itemdecompra(id_produto, quantidade, valor_unitario) values (?,?,?)";
 
 			myStmt = myConn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-						
+
 			for (ItemDeCompra itemdecompra : compra.getListaDeItemDeCompra()) {
 				myStmt.setInt(1, itemdecompra.getProduto().getIdProduto());
 				myStmt.setInt(2, itemdecompra.getQuantidade());
@@ -226,13 +214,12 @@ public class CompraDbUtil {
 				}
 			}
 		} finally {
-			// clean up JDBC objects
 			close(myConn, myStmt, null);
 		}
 
 	}
 
-	public void saveRelationship(Compra compra)	throws SQLException {
+	public void saveRelationship(Compra compra) throws SQLException {
 		Connection myConn = null;
 		PreparedStatement myStmt = null;
 
@@ -241,7 +228,7 @@ public class CompraDbUtil {
 
 			String sql = "update itemdecompra set id_compra = (?) where id_itemdecompra = (?)";
 			myStmt = myConn.prepareStatement(sql);
-			
+
 			myStmt.setInt(1, compra.getIdCompra());
 
 			for (ItemDeCompra itemDeCompra : compra.getListaDeItemDeCompra()) {
@@ -249,88 +236,11 @@ public class CompraDbUtil {
 				myStmt.execute();
 			}
 		} finally {
-			// clean up JDBC objects
 			close(myConn, myStmt, null);
 		}
 
 	}
 
-	//
-	// public Produto getProduto(String idProdutoString) throws Exception {
-	//
-	// Produto produto = null;
-	//
-	// Connection myConn = null;
-	// PreparedStatement myStmt = null;
-	// ResultSet myRs = null;
-	// int idProduto;
-	//
-	// try {
-	// // convert student id to int
-	// idProduto = Integer.parseInt(idProdutoString);
-	//
-	// // get connection to database
-	// myConn = dataSource.getConnection();
-	//
-	// // create sql to get selected student
-	// String sql = "select * from produto where id_produto=(?) order by
-	// nome_produto";
-	//
-	// // create prepared statement
-	// myStmt = myConn.prepareStatement(sql);
-	//
-	// // set params
-	// myStmt.setInt(1, idProduto);
-	//
-	// // execute statement
-	// myRs = myStmt.executeQuery();
-	//
-	// // retrieve data from result set row
-	// if (myRs.next()) {
-	// String nomeProduto = myRs.getString("nome_produto");
-	//
-	// // use the studentId during construction
-	// produto = new Produto(nomeProduto);
-	// produto.setIdProduto(idProduto);
-	//
-	// } else {
-	// throw new Exception("Could not find produto id: " + idProduto);
-	// }
-	//
-	// return produto;
-	// } finally {
-	// // clean up JDBC objects
-	// close(myConn, myStmt, myRs);
-	// }
-	// }
-	//
-	// public void updateProduto(Produto produto) throws Exception {
-	//
-	// Connection myConn = null;
-	// PreparedStatement myStmt = null;
-	//
-	// try {
-	// // get db connection
-	// myConn = dataSource.getConnection();
-	//
-	// // create SQL update statement
-	// String sql = "update produto set nome_produto = (?) where id_produto =
-	// (?)";
-	//
-	// // prepare statement
-	// myStmt = myConn.prepareStatement(sql);
-	//
-	// // set params
-	// myStmt.setString(1, produto.getNomeProduto());
-	// myStmt.setInt(2, produto.getIdProduto());
-	// // execute SQL statement
-	// myStmt.execute();
-	// } finally {
-	// // clean up JDBC objects
-	// close(myConn, myStmt, null);
-	// }
-	// }
-	//
 	public void deleteCompra(int idCompra) throws Exception {
 
 		Connection myConn = null;
@@ -338,22 +248,16 @@ public class CompraDbUtil {
 
 		try {
 
-			// get connection to database
 			myConn = dataSource.getConnection();
 
-			// create sql to delete student
 			String sql = "delete from compra where id_compra=?";
 
-			// prepare statement
 			myStmt = myConn.prepareStatement(sql);
 
-			// set params
 			myStmt.setInt(1, idCompra);
 
-			// execute sql statement
 			myStmt.execute();
 		} finally {
-			// clean up JDBC code
 			close(myConn, myStmt, null);
 		}
 	}
@@ -364,86 +268,19 @@ public class CompraDbUtil {
 
 		try {
 
-			// get connection to database
 			myConn = dataSource.getConnection();
 
-			// create sql to delete student
 			String sql = "delete from itemdecompra where id_compra = (?)";
 
-			// prepare statement
 			myStmt = myConn.prepareStatement(sql);
 
-			// set params
 			myStmt.setInt(1, idCompra);
 
-			// execute sql statement
 			myStmt.execute();
 		} finally {
-			// clean up JDBC code
 			close(myConn, myStmt, null);
 		}
 	}
-
-	// public boolean hasRelationshipFornecedor(int produtoId) throws
-	// SQLException {
-	//
-	// boolean retorno = false;
-	// Connection myConn = null;
-	// PreparedStatement myStmt = null;
-	//
-	// try {
-	// // get db connection
-	// myConn = dataSource.getConnection();
-	//
-	// String sql = "select * from fornecedor_produto where
-	// fornecedor_produto.id_produto = (?)";
-	//
-	// myStmt = myConn.prepareStatement(sql);
-	//
-	// myStmt.setInt(1, produtoId);
-	//
-	// myStmt.execute();
-	//
-	// ResultSet resultSet = myStmt.getResultSet();
-	//
-	// while (resultSet.next()) {
-	// retorno = true;
-	// }
-	//
-	// } finally {
-	// close(myConn, myStmt, null);
-	// }
-	//
-	// return retorno;
-	// }
-	//
-	// public boolean checkIfDuplicate(String nomeProduto) throws SQLException {
-	//
-	// boolean retorno = false;
-	// Connection myConn = null;
-	// PreparedStatement myStmt = null;
-	//
-	// try {
-	// myConn = dataSource.getConnection();
-	//
-	// String sql = "select * from produto where nome_produto = (?)";
-	//
-	// myStmt = myConn.prepareStatement(sql);
-	//
-	// myStmt.setString(1, nomeProduto);
-	//
-	// myStmt.execute();
-	//
-	// ResultSet resultSet = myStmt.getResultSet();
-	//
-	// while (resultSet.next()) {
-	// retorno = true;
-	// }
-	// } finally {
-	// close(myConn, myStmt, null);
-	// }
-	// return retorno;
-	// }
 
 	public List<Compra> filterListaCompra(int idFornecedorSelecionado, java.sql.Date dataInicial,
 			java.sql.Date dataFinal) throws Exception {
@@ -514,8 +351,114 @@ public class CompraDbUtil {
 
 			return listaCompra;
 		} finally {
-			// close JDBC objects
 			close(myConn, myStmt, myRs);
 		}
+	}
+	
+	
+	public List<Compra> filterListaCompra(int idFornecedorSelecionado) throws Exception {
+
+		Connection myConn = null;
+		PreparedStatement myStmt = null;
+		ResultSet myRs = null;
+
+		ArrayList<Compra> listaCompra = new ArrayList<>();
+		Fornecedor fornecedor = null;
+		Compra compra = null;
+
+		int idCompraAtual = 0;
+		List<ItemDeCompra> listaItemDeCompra = new ArrayList<ItemDeCompra>();
+
+		try {
+
+			myConn = dataSource.getConnection();
+
+			String sql = "select * from compra join itemdecompra as tabelacompraitem on compra.id_compra = tabelacompraitem.id_compra where id_fornecedor = (?) ";
+
+			myStmt = myConn.prepareStatement(sql);
+
+			myStmt.setInt(1, idFornecedorSelecionado);
+			
+			myRs = myStmt.executeQuery();
+
+			while (myRs.next()) {
+
+				int idCompra = myRs.getInt("id_compra");
+				Date dataCompra = myRs.getDate("data_compra");
+				int idFornecedor = myRs.getInt("id_fornecedor");
+				Double valorTotal = myRs.getDouble("valor_total");
+				int idProduto = myRs.getInt("id_produto");
+				int idItemDeCompra = myRs.getInt("id_itemdecompra");
+				Integer quantidade = myRs.getInt("quantidade");
+				Double valorUnitario = myRs.getDouble("valor_unitario");
+
+				fornecedor = fornecedorDbUtil.getFornecedor(idFornecedor);
+
+				Produto produto = produtoDbUtil.getProduto(idProduto);
+
+				ItemDeCompra itemdecompra = new ItemDeCompra(produto, quantidade, valorUnitario);
+				itemdecompra.setIdItemDeCompra(idItemDeCompra);
+
+				if (idCompraAtual != idCompra) {
+					compra = new Compra(fornecedor, dataCompra);
+					compra.setValorTotal(valorTotal);
+					compra.setIdCompra(idCompra);
+					compra.setFornecedor(fornecedor);
+					listaItemDeCompra = new ArrayList<ItemDeCompra>();
+					listaItemDeCompra.add(itemdecompra);
+
+					idCompraAtual = idCompra;
+					listaCompra.add(compra);
+				} else {
+					listaItemDeCompra.add(itemdecompra);
+
+				}
+
+				compra.setListaDeItemDeCompra(listaItemDeCompra);
+
+			}
+
+			return listaCompra;
+		} finally {
+			close(myConn, myStmt, myRs);
+		}
+	}
+
+	public boolean isDataCompraValid(Compra compra) throws Exception {
+		Connection myConn = null;
+		PreparedStatement myStmt = null;
+		
+		boolean isValid = true;
+
+		java.util.Date dataCompra = compra.getDataCompra();
+		java.sql.Date dataCompraSql = new java.sql.Date(dataCompra.getTime());
+
+		int idFornecedor = compra.getFornecedor().getIdFornecedor();
+
+		try {
+
+			myConn = dataSource.getConnection();
+
+			String sql = "select * from fornecedor where id_fornecedor = (?) and data_contrato > (?)";
+
+			myStmt = myConn.prepareStatement(sql);
+
+			myStmt.setInt(1, idFornecedor);
+			myStmt.setDate(2, dataCompraSql);
+			myStmt.execute();
+			
+			ResultSet resultSet = myStmt.getResultSet();
+
+			if (resultSet.next()) {
+				isValid =  false;
+			}
+			
+		} finally {
+			close(myConn, myStmt, null);
+		}
+
+		
+		return isValid;
+		
 	}
 }

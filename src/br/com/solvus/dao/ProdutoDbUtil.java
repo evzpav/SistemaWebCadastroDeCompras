@@ -1,4 +1,4 @@
-package br.com.solvus.controller;
+package br.com.solvus.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,7 +10,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import br.com.solvus.jdbc.Produto;
+import br.com.solvus.model.Produto;
 
 public class ProdutoDbUtil {
 
@@ -29,35 +29,27 @@ public class ProdutoDbUtil {
 		ResultSet myRs = null;
 
 		try {
-			// get a connection
 			myConn = dataSource.getConnection();
 
-			// create sql statement
 			String sql = "select * from produto order by nome_produto";
 
 			myStmt = myConn.createStatement();
 
-			// execute query
 			myRs = myStmt.executeQuery(sql);
 
-			// process result set
 			while (myRs.next()) {
 
-				// retrieve data from result set row
 				int idProduto = myRs.getInt("id_produto");
 				String nomeProduto = myRs.getString("nome_produto");
 
-				// create new produto object
 
 				Produto tempProduto = new Produto(nomeProduto);
 				tempProduto.setIdProduto(idProduto);
-				// add it to the list of students
 				produtos.add(tempProduto);
 			}
 
 			return produtos;
 		} finally {
-			// close JDBC objects
 			close(myConn, myStmt, myRs);
 		}
 	}
@@ -74,8 +66,8 @@ public class ProdutoDbUtil {
 			}
 
 			if (myConn != null) {
-				myConn.close(); // doesn't really close it ... just puts back in
-								// connection pool
+				myConn.close(); 
+					
 			}
 		} catch (Exception exc) {
 			exc.printStackTrace();
@@ -92,18 +84,14 @@ public class ProdutoDbUtil {
 			
 		
 		try {
-			// get db connection
 			myConn = dataSource.getConnection();
 
-			// create sql for insert
 			String sql = "insert into produto (nome_produto) values (?)";
 
 			myStmt = myConn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-			// set the param values for the student
 			myStmt.setString(1, produto.getNomeProduto());
 
-			// execute sql insert
 			myStmt.execute();
 
 			try (ResultSet keys = myStmt.getGeneratedKeys()) {
@@ -112,7 +100,6 @@ public class ProdutoDbUtil {
 				produto.setIdProduto(id);
 			}
 		} finally {
-			// clean up JDBC objects
 			close(myConn, myStmt, null);
 		}
 		}
@@ -125,32 +112,22 @@ public class ProdutoDbUtil {
 		Connection myConn = null;
 		PreparedStatement myStmt = null;
 		ResultSet myRs = null;
-	//	int idProduto;
 
 		try {
-			// convert student id to int
-		//	idProduto = Integer.parseInt(idProdutoString);
 
-			// get connection to database
 			myConn = dataSource.getConnection();
 
-			// create sql to get selected student
 			String sql = "select * from produto where id_produto=(?) order by nome_produto";
 
-			// create prepared statement
 			myStmt = myConn.prepareStatement(sql);
 
-			// set params
 			myStmt.setInt(1, idProduto);
 
-			// execute statement
 			myRs = myStmt.executeQuery();
 
-			// retrieve data from result set row
 			if (myRs.next()) {
 				String nomeProduto = myRs.getString("nome_produto");
 
-				// use the studentId during construction
 				produto = new Produto(nomeProduto);
 				produto.setIdProduto(idProduto);
 
@@ -160,7 +137,6 @@ public class ProdutoDbUtil {
 
 			return produto;
 		} finally {
-			// clean up JDBC objects
 			close(myConn, myStmt, myRs);
 		}
 	}
@@ -171,22 +147,16 @@ public class ProdutoDbUtil {
 		PreparedStatement myStmt = null;
 
 		try {
-			// get db connection
 			myConn = dataSource.getConnection();
 
-			// create SQL update statement
 			String sql = "update produto set nome_produto = (?) where id_produto = (?)";
 
-			// prepare statement
 			myStmt = myConn.prepareStatement(sql);
 
-			// set params
 			myStmt.setString(1, produto.getNomeProduto());
 			myStmt.setInt(2, produto.getIdProduto());
-			// execute SQL statement
 			myStmt.execute();
 		} finally {
-			// clean up JDBC objects
 			close(myConn, myStmt, null);
 		}
 	}
@@ -198,41 +168,35 @@ public class ProdutoDbUtil {
 
 		try {
 
-			// get connection to database
 			myConn = dataSource.getConnection();
 
-			// create sql to delete student
 			String sql = "delete from produto where id_produto=?";
 
-			// prepare statement
 			myStmt = myConn.prepareStatement(sql);
 
-			// set params
 			myStmt.setInt(1, produtoId);
 
-			// execute sql statement
 			myStmt.execute();
+			
 		} finally {
-			// clean up JDBC code
 			close(myConn, myStmt, null);
 		}
 	}
 
-	public boolean hasRelationshipFornecedor(int produtoId) throws SQLException {
+	public boolean hasRelationshipFornecedor(int idProduto) throws SQLException {
 
 		boolean retorno = false;
 		Connection myConn = null;
 		PreparedStatement myStmt = null;
 
 		try {
-			// get db connection
 			myConn = dataSource.getConnection();
 
 			String sql = "select * from fornecedor_produto where fornecedor_produto.id_produto = (?)";
 
 			myStmt = myConn.prepareStatement(sql);
 			
-			myStmt.setInt(1, produtoId);
+			myStmt.setInt(1, idProduto);
 
 			myStmt.execute();
 
@@ -251,7 +215,7 @@ public class ProdutoDbUtil {
 
 	public boolean checkIfDuplicate(String nomeProduto) throws SQLException {
 
-		boolean retorno = false;
+	
 		Connection myConn = null;
 		PreparedStatement myStmt = null;
 
@@ -269,11 +233,11 @@ public class ProdutoDbUtil {
 			ResultSet resultSet = myStmt.getResultSet();
 
 			while (resultSet.next()) {
-				retorno = true;
+				return true;
 			}
 		} finally {
 			close(myConn, myStmt, null);
 		}
-		return retorno;
+		return false;
 	}
 }

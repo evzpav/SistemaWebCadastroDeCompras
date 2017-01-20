@@ -1,6 +1,7 @@
 package br.com.solvus.controller;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,12 +18,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
-import br.com.solvus.jdbc.Fornecedor;
-import br.com.solvus.jdbc.Produto;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-/**
- * Servlet implementation class StudentControllerServlet
- */
+import br.com.solvus.dao.FornecedorDbUtil;
+import br.com.solvus.dao.ProdutoDbUtil;
+import br.com.solvus.model.Fornecedor;
+import br.com.solvus.model.Produto;
+import br.com.solvus.util.ConvertDate;
+import br.com.solvus.util.HttpUtil;
+import br.com.solvus.util.ValidationError;
+
 @WebServlet("/FornecedorControllerServlet")
 public class FornecedorControllerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -37,11 +43,9 @@ public class FornecedorControllerServlet extends HttpServlet {
 	public void init() throws ServletException {
 		super.init();
 
-		// create our student db util ... and pass in the conn pool / datasource
 		try {
 			fornecedorDbUtil = new FornecedorDbUtil(dataSource);
 			produtoDbUtil = new ProdutoDbUtil(dataSource);
-			// produtoControllerServlet = new ProdutoControllerServlet();
 		} catch (Exception exc) {
 			throw new ServletException(exc);
 		}
@@ -52,10 +56,9 @@ public class FornecedorControllerServlet extends HttpServlet {
 
 		try {
 			String theCommand = request.getParameter("command");
-						
-			System.out.println("theCommand"+theCommand);
-		
-			
+
+			System.out.println("theCommand" + theCommand);
+
 			if (theCommand == null) {
 				theCommand = "LIST";
 
@@ -70,11 +73,10 @@ public class FornecedorControllerServlet extends HttpServlet {
 			case "IR_PARA_ADICIONAR_FORNECEDOR":
 				listProdutosFornecedor(request, response);
 				break;
-			
 
 			case "LOAD":
 				loadFornecedor(request, response);
-				
+
 				break;
 
 			case "UPDATE":
@@ -95,27 +97,25 @@ public class FornecedorControllerServlet extends HttpServlet {
 
 	}
 
-	// private void loadProduto(HttpServletRequest request, HttpServletResponse
-	// response) throws Exception {
-	//
-	// String produtoId = request.getParameter("idProduto");
-	// Produto produto = produtoDbUtil.getProduto(produtoId);
-	//
-	// }
-
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		try {
-			// read the "command" parameter
 			String theCommand = request.getParameter("command");
 
-			// route to the appropriate method
 			switch (theCommand) {
 
 			case "ADD":
 
 				addFornecedor(request, response);
+				break;
+
+			case "UPDATE":
+				updateFornecedor(request, response);
+				break;
+				
+			case "DELETE":
+				deleteFornecedor(request, response);
 				break;
 
 			default:
@@ -131,195 +131,265 @@ public class FornecedorControllerServlet extends HttpServlet {
 
 	private void deleteFornecedor(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		// read student id from form data
-		String fornecedorIdString = request.getParameter("idFornecedor");
-		int idFornecedor = Integer.parseInt(fornecedorIdString);
+		String jsonDeleteFornecedor = HttpUtil.getBody(request);
 
-		fornecedorDbUtil.deleteRelationship(idFornecedor);
-		fornecedorDbUtil.deleteFornecedor(idFornecedor);
+		Gson gson = new Gson();
 
-		// send them back to "list students" page
-		listFornecedores(request, response);
+		System.out.println("json delete fornecedor: " + jsonDeleteFornecedor);
+
+		Fornecedor fornecedorDoJson = gson.fromJson(jsonDeleteFornecedor, Fornecedor.class);
+
+		int idFornecedor = fornecedorDoJson.getIdFornecedor();
+
+		ValidationError validation = validateDeleteFornecedor(idFornecedor);
+
+		if (validation.isValid()) {
+
+			fornecedorDbUtil.deleteRelationship(idFornecedor);
+			fornecedorDbUtil.deleteFornecedor(idFornecedor);
+			HttpUtil.setStatusSuccess(response);
+
+		} else {
+			HttpUtil.setStatusError(response);
+		}
+
+		System.out.println("mensagem: " + validation.getMsg());
+
+		HttpUtil.sendJsonToJsp(response, validation);
+
+	}
+
+	private ValidationError validateDeleteFornecedor(int idFornecedor) throws SQLException {
+		ValidationError validation = new ValidationError();
+		if (!hasRelationshipCompra(idFornecedor)) {
+			validation.setValid(true);
+			validation.setMsg("Fornecedor deletado com sucesso!");
+		} else {
+			validation.setValid(false);
+			validation.setMsg("Fornecedor já está registrado em pelo menos uma compra");
+		}
+		return validation;
+
+	}
+
+	private boolean hasRelationshipCompra(int idFornecedor) throws SQLException {
+
+		return fornecedorDbUtil.hasRelationshipCompra(idFornecedor);
+
 	}
 
 	private void updateFornecedor(HttpServletRequest request, HttpServletResponse response) throws Exception {
+//
+//		String nomeFornecedor = request.getParameter("nomeFornecedor");
+//		String dataContratoString = request.getParameter("dataContrato");
+//
+//		String fornecedorIdString = request.getParameter("idFornecedor");
+//		int idFornecedor = Integer.parseInt(fornecedorIdString);
+//
+//		Date dataContrato = ConvertDate.convertStringToDate(dataContratoString);
+//
+//		List<Produto> listagemProdutos = new ArrayList<Produto>();
+//
+//		String[] produtoIdString = request.getParameterValues("idProduto");
+//		for (String tempProdutoString : produtoIdString) {
+//			int tempIdProduto = Integer.parseInt(tempProdutoString);
+//			Produto produto = produtoDbUtil.getProduto(tempIdProduto);
+//			listagemProdutos.add(produto);
+//
+//		}
+//
+//		Fornecedor fornecedor = new Fornecedor(nomeFornecedor, dataContrato);
+//		fornecedor.setListagemProdutos(listagemProdutos);
+//		fornecedor.setIdFornecedor(idFornecedor);
+//
+//		fornecedorDbUtil.deleteRelationship(fornecedor.getIdFornecedor());
+//
+//		fornecedorDbUtil.updateFornecedor(fornecedor);
+//
+//		listFornecedores(request, response);
 
-		// read student info from form data
-		String nomeFornecedor = request.getParameter("nomeFornecedor");
-		String dataContratoString = request.getParameter("dataContrato");
+		String jsonUpdateFornecedor = HttpUtil.getBody(request);
+
+
+		Gson gson = new GsonBuilder().setDateFormat("dd/MM/yyyy").create();
+
+		System.out.println("json update produto " + jsonUpdateFornecedor);
+
+		Fornecedor fornecedorDoJson = gson.fromJson(jsonUpdateFornecedor, Fornecedor.class);
+
 		
-		String fornecedorIdString = request.getParameter("idFornecedor");
-		int idFornecedor = Integer.parseInt(fornecedorIdString);
-				
-		Date dataContrato = convertStringToDate(dataContratoString);
+		ValidationError validation = validateFornecedorInput(fornecedorDoJson.getNomeFornecedor());
 
-		List<Produto> listagemProdutos = new ArrayList<Produto>();
-
-		String[] produtoIdString = request.getParameterValues("idProduto");
-		for (String tempProdutoString : produtoIdString) {
-			int tempIdProduto =  Integer.parseInt(tempProdutoString);
-			Produto produto = produtoDbUtil.getProduto(tempIdProduto);
-			listagemProdutos.add(produto);
+		if (validation.isValid()) {
+			Date dataContrato = fornecedorDoJson.getDataContrato();
+			String nomeFornecedor = fornecedorDoJson.getNomeFornecedor();
+			int idFornecedor = fornecedorDoJson.getIdFornecedor();
+			List<Integer> listagemIdProdutos = fornecedorDoJson.getListagemIdProdutos();
+			List<Produto> listagemProdutos = new ArrayList<Produto>();
 			
+			
+			addProdutoNaListagemProdutos(listagemIdProdutos, listagemProdutos);
+			
+			Fornecedor fornecedor = new Fornecedor(nomeFornecedor, dataContrato);
+			fornecedor.setIdFornecedor(idFornecedor);
+			fornecedor.setListagemProdutos(listagemProdutos);
+
+			fornecedorDbUtil.deleteRelationship(fornecedor.getIdFornecedor());
+			fornecedorDbUtil.updateFornecedor(fornecedor);
+						
+			validation.setMsg("Fornecedor atualizado com sucesso");
+			HttpUtil.setStatusSuccess(response);
+			HttpUtil.sendJsonToJsp(response, validation);
+			System.out.println("Mensagem: " + validation.getMsg());
+
+		} else {
+			HttpUtil.setStatusError(response);
+			HttpUtil.sendJsonToJsp(response, validation);
+			System.out.println("Mensagem: " + validation.getMsg());
 		}
-		
-		Fornecedor fornecedor = new Fornecedor(nomeFornecedor, dataContrato);
-		fornecedor.setListagemProdutos(listagemProdutos);
-		fornecedor.setIdFornecedor(idFornecedor);
-		
-		fornecedorDbUtil.deleteRelationship(fornecedor.getIdFornecedor());
-				
-		fornecedorDbUtil.updateFornecedor(fornecedor);
 
 		
-
-		listFornecedores(request, response);
-
 	}
-	
-	
 
-	//
 	private void loadFornecedor(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		// read student id from form data
 		String idFornecedorString = request.getParameter("idFornecedor");
 
 		int idFornecedor = Integer.parseInt(idFornecedorString);
-		
+
 		Fornecedor fornecedor = fornecedorDbUtil.getFornecedor(idFornecedor);
 
 		List<Produto> produtos = produtoDbUtil.getProdutos();
-		
+
 		for (Produto produto : produtos) {
-			
-			for (Produto produtoFornecedor : fornecedor.getListagemProdutos()){
-				
-				if (produto.getIdProduto() == produtoFornecedor.getIdProduto()){
+
+			for (Produto produtoFornecedor : fornecedor.getListagemProdutos()) {
+
+				if (produto.getIdProduto() == produtoFornecedor.getIdProduto()) {
 					produto.setChecked(true);
 				}
-				
-			}
-			
-		}
-			
 
-		// add students to the request
+			}
+
+		}
+
 		request.setAttribute("PRODUTOS_LIST", produtos);
-		
-		
-		
-			// place student in the request attribute
+
 		request.setAttribute("FORNECEDOR_UPDATE", fornecedor);
 
-		// send to jsp page: update-student-form.jsp
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/update-fornecedor-form.jsp");
 		dispatcher.forward(request, response);
 	}
 
 	private void addFornecedor(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		// read student info from form data
-		String nomeFornecedor = request.getParameter("nomeFornecedor");
-		String dataContratoString = request.getParameter("dataContrato");
-		System.out.println("string:" + dataContratoString);
-		Date dataContrato = convertStringToDate(dataContratoString);
+	
+		String jsonAddFornecedor = HttpUtil.getBody(request);
 
-		List<Produto> listagemProdutos = new ArrayList<Produto>();
 
-		String[] produtoIdString = request.getParameterValues("idProduto");
-		for (String tempProdutoString : produtoIdString) {
-				int tempIdProduto =  Integer.parseInt(tempProdutoString);
+		Gson gson = new GsonBuilder().setDateFormat("dd/MM/yyyy").create();
+
+		System.out.println("json add produto " + jsonAddFornecedor);
+
+		Fornecedor fornecedorDoJson = gson.fromJson(jsonAddFornecedor, Fornecedor.class);
+
+		
+		ValidationError validation = validateFornecedorInputUpdate(fornecedorDoJson.getNomeFornecedor());
+
+		if (validation.isValid()) {
+			Date dataContrato = fornecedorDoJson.getDataContrato();
+			String nomeFornecedor = fornecedorDoJson.getNomeFornecedor();
+
+			List<Integer> listagemIdProdutos = fornecedorDoJson.getListagemIdProdutos();
+			List<Produto> listagemProdutos = new ArrayList<Produto>();
+			
+			
+			addProdutoNaListagemProdutos(listagemIdProdutos, listagemProdutos);
+			
+			Fornecedor fornecedor = new Fornecedor(nomeFornecedor, dataContrato);
+
+			fornecedor.setListagemProdutos(listagemProdutos);
+
+			fornecedorDbUtil.addFornecedor(fornecedor);
+						
+			validation.setMsg("Fornecedor salvo com sucesso");
+			HttpUtil.setStatusSuccess(response);
+			HttpUtil.sendJsonToJsp(response, validation);
+			System.out.println("Mensagem: " + validation.getMsg());
+
+		} else {
+			HttpUtil.setStatusError(response);
+			HttpUtil.sendJsonToJsp(response, validation);
+			System.out.println("Mensagem: " + validation.getMsg());
+		}
+
+	}
+
+	private void addProdutoNaListagemProdutos(List<Integer> listagemIdProdutos, List<Produto> listagemProdutos)
+			throws Exception {
+		for (Integer tempIdProduto : listagemIdProdutos) {
 			Produto produto = produtoDbUtil.getProduto(tempIdProduto);
 			listagemProdutos.add(produto);
 		}
+	}
 
-		Fornecedor fornecedor = new Fornecedor(nomeFornecedor, dataContrato);
-		fornecedor.setListagemProdutos(listagemProdutos);
+	public ValidationError validateFornecedorInput(String inputName) throws SQLException {
 
-		fornecedorDbUtil.addFornecedor(fornecedor);
+		ValidationError validation = new ValidationError();
 
-		// send back to main page (the student list)
-		// SEND AS REDIRECT to avoid multiple-browser reload issue
-		response.sendRedirect(request.getContextPath() + "/FornecedorControllerServlet?command=LIST");
+		isFornecedorDuplicate(inputName, validation);
+		isNameEmpty(inputName, validation);
+
+		return validation;
+	}
+
+	public ValidationError validateFornecedorInputUpdate(String inputName) throws SQLException {
+
+		ValidationError validation = new ValidationError();
+
+		isNameEmpty(inputName, validation);
+
+		return validation;
+	}
+	
+	private void isFornecedorDuplicate(String nomeFornecedor, ValidationError validation) throws SQLException {
+
+		boolean nomeDuplicado = fornecedorDbUtil.checkIfDuplicate(nomeFornecedor);
+		if (nomeDuplicado) {
+			validation.setValid(false);
+			validation.setMsg("O nome já existe.");
+
+		}
+	}
+
+	public void isNameEmpty(String inputName, ValidationError validation) {
+		if (inputName.isEmpty()) {
+			validation.setValid(false);
+			validation.setMsg("Preencha um nome válido.");
+
+		}
 	}
 
 	private void listFornecedores(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		// get students from db util
 		List<Fornecedor> fornecedores = fornecedorDbUtil.getFornecedores();
 
-		// add students to the request
 		request.setAttribute("FORNECEDORES_LIST", fornecedores);
 
-		// send to JSP page (view)
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/list-fornecedores.jsp");
 		dispatcher.forward(request, response);
 	}
 
 	private void listProdutosFornecedor(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		// get students from db util
 		List<Produto> produtos = produtoDbUtil.getProdutos();
 
-		// add students to the request
 		request.setAttribute("PRODUTOS_LIST", produtos);
 
-		// send to JSP page (view)
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/add-fornecedor-form.jsp");
 
 		dispatcher.forward(request, response);
 
 	}
-	
-	
 
-	// private ValidationError validateDataEntry(String nomeProduto) throws
-	// SQLException {
-	// ValidationError validation = new ValidationError();
-	//
-	// if (nomeProduto.isEmpty()) {
-	// validation.setValid(false);
-	// validation.setMsg("O nome está em branco");
-	// }
-	//
-	// boolean isProdutoDuplicado =
-	// (produtoDbUtil.checkIfDuplicate(nomeProduto));
-	// if (isProdutoDuplicado) {
-	// validation.setValid(false);
-	// validation.setMsg("Produto duplicado");
-	// }
-	//
-	// return validation;
-	// }
-
-	// private void validateToAddForm(HttpServletRequest request,
-	// HttpServletResponse response) throws Exception {
-	//
-	// String nomeProduto = request.getParameter("nomeProduto");
-	//
-	// ValidationError validationToForm = validateDataEntry(nomeProduto);
-	//
-	// request.setAttribute("VALIDATION", validationToForm);
-	//
-	// RequestDispatcher dispatcher =
-	// request.getRequestDispatcher("/add-produto-form.jsp");
-	// dispatcher.forward(request, response);
-	// }
-
-	public Date convertStringToDate(String inputStringDate) {
-		Date convertedDate = null;
-
-		try {
-			DateFormat formatter = null;
-
-			formatter = new SimpleDateFormat("dd/MM/yyyy");
-			convertedDate = (Date) formatter.parse(inputStringDate);
-		} catch (ParseException parse) {
-			convertedDate = null;
-
-		}
-
-		return convertedDate;
-	}
 }

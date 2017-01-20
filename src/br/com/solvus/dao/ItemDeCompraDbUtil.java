@@ -1,4 +1,4 @@
-package br.com.solvus.controller;
+package br.com.solvus.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,8 +10,8 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import br.com.solvus.jdbc.ItemDeCompra;
-import br.com.solvus.jdbc.Produto;
+import br.com.solvus.model.ItemDeCompra;
+import br.com.solvus.model.Produto;
 
 public class ItemDeCompraDbUtil {
 

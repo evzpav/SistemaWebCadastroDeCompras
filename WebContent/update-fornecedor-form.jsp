@@ -7,7 +7,7 @@
 <head>
 	<title> Editar Fornecedor</title>
 	
-<jsp:include page= "css-files.jsp"/>
+<jsp:include page= "js-css-files.jsp" />
 
 
   
@@ -26,20 +26,21 @@
    </div>
 </div>
  
+<div id="alerta"></div>
 
-	<form action="FornecedorControllerServlet" method="GET">
+	<form action="" method="GET">
 		<input type="hidden" name="command" value="UPDATE"/>
 	
-		<input type="hidden" name="idFornecedor" value="${FORNECEDOR_UPDATE.idFornecedor}"/>
+		<input type="hidden" name="idFornecedor" id="idFornecedor" value="${FORNECEDOR_UPDATE.idFornecedor}"/>
 	
 		<div class="col-xs-4 divLabelFornecedor">	
 					<label class="fornLabel ">Nome do Fornecedor: </label>
-					<input type="text" class="form-control" name="nomeFornecedor" value="${FORNECEDOR_UPDATE.nomeFornecedor}"/>
+					<input type="text" class="form-control" name="nomeFornecedor" id="nomeFornecedor" value="${FORNECEDOR_UPDATE.nomeFornecedor}"/>
 			</div>
 			
 			<div class="col-xs-4 divLabelDatePicker">		
 					<label class="fornLabel">Data do Contrato: </label>
-					<input type="text" class="form-control" id="datepicker" name="dataContrato" value="<fmt:formatDate value="${FORNECEDOR_UPDATE.dataContrato}"
+					<input type="text" class="form-control datepicker" id="dataContrato" name="dataContrato" value="<fmt:formatDate value="${FORNECEDOR_UPDATE.dataContrato}"
 										pattern="dd/MM/yyyy" />" >
 						
 			</div>						
@@ -58,11 +59,11 @@
 										<label class="form-check" >
 										
 										<c:if test="${tempProduto.checked}">
-											<input  type="checkbox" class="form-check-input" name="idProduto" id="regular-checkbox" value="${tempProduto.idProduto}"  checked>
+											<input  type="checkbox" class="form-check-input" name="${tempProduto.idProduto}" id="regular-checkbox" value="${tempProduto.idProduto}"  checked>
 										</c:if>	
 										
 										<c:if test="${tempProduto.checked == false}">
-											<input  type="checkbox" class="form-check-input" name="idProduto" id="regular-checkbox" value="${tempProduto.idProduto}"  >
+											<input  type="checkbox" class="form-check-input" name="${tempProduto.idProduto}" id="regular-checkbox" value="${tempProduto.idProduto}"  >
 										</c:if>	
 										
 														
@@ -92,5 +93,76 @@
 	
 			<jsp:include page= "footer.jsp"/>
 	</div>
+	
+	<script type="text/javascript">
+	
+
+	
+		$(".botaoSalvar")
+				.click(
+						function(event) {
+							event.preventDefault();
+
+							var error = "";
+
+							if ($('#dataContrato').val() == "") {
+								error += "Data em branco. <br>";
+
+							}
+
+							if ($('#nomeFornecedor').val() == "") {
+								error += "Nome do fornecedor em branco. <br>";
+							}
+							 
+							
+							var produtosCheckbox = [];
+							 $('#divCheckbox input:checked').each(function() {
+								 produtosCheckbox.push(this.name);
+						        });
+							 
+							 
+							if(produtosCheckbox.length === 0){
+								 error += "Nenhum produto selecionado. <br>";
+							 }
+							
+
+							if (error !== "") {
+								var alertaErro = '<div class="alert alert-danger" role="alert">  <strong>Erro! </strong><br>' + error + '</div>';
+								$('#alerta').html(alertaErro);
+
+							} else {
+
+								var jsonUpdateFornecedor = {
+									nomeFornecedor : $('#nomeFornecedor').val(),
+									dataContrato: $('#dataContrato').val(),
+									listagemIdProdutos: produtosCheckbox,
+									idFornecedor: $('#idFornecedor').val()
+								};
+								console.log("json"+ jsonUpdateFornecedor);
+								
+								$.ajax({
+											type : "POST",
+											url : "FornecedorControllerServlet?command=UPDATE",
+											dataType : 'json',
+											contentType : 'application/json; charset=utf-8',
+											data : JSON.stringify(jsonUpdateFornecedor),
+											success : function(data1) {
+												console.log(data1);
+												var alertaSucesso = '<div class="alert alert-success" role="alert">  <strong>Sucesso! </strong>'+ data1.msg + '.</div>';
+												$('#alerta').html(alertaSucesso);
+												window.open ('FornecedorControllerServlet','_self',false)
+											},
+
+											error : function(data) {
+
+												var alertaErro = '<div class="alert alert-danger" role="alert">  <strong>Erro! </strong>'+ data.responseJSON.msg + '</div>';
+												$('#alerta').html(alertaErro);
+											}
+										});
+
+							}
+						});
+	</script>
+	
 </body>
 </html>
