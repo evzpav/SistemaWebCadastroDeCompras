@@ -2,6 +2,8 @@
 
 <link href="css/bootstrap-sortable.css" rel="stylesheet" type="text/css">
 
+<script src="js/utils.js"></script>
+
 <script src="js/tether.min.js"></script>
 	
 <script src="js/tether.js"></script>
@@ -15,6 +17,8 @@
 <script	src="js/bootstrap.min.js"	></script>
 
 <script src="js/bootstrap-sortable.js"></script>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 
 

@@ -25,7 +25,6 @@ import br.com.solvus.dao.FornecedorDbUtil;
 import br.com.solvus.dao.ProdutoDbUtil;
 import br.com.solvus.model.Fornecedor;
 import br.com.solvus.model.Produto;
-import br.com.solvus.util.ConvertDate;
 import br.com.solvus.util.HttpUtil;
 import br.com.solvus.util.ValidationError;
 
@@ -179,34 +178,6 @@ public class FornecedorControllerServlet extends HttpServlet {
 	}
 
 	private void updateFornecedor(HttpServletRequest request, HttpServletResponse response) throws Exception {
-//
-//		String nomeFornecedor = request.getParameter("nomeFornecedor");
-//		String dataContratoString = request.getParameter("dataContrato");
-//
-//		String fornecedorIdString = request.getParameter("idFornecedor");
-//		int idFornecedor = Integer.parseInt(fornecedorIdString);
-//
-//		Date dataContrato = ConvertDate.convertStringToDate(dataContratoString);
-//
-//		List<Produto> listagemProdutos = new ArrayList<Produto>();
-//
-//		String[] produtoIdString = request.getParameterValues("idProduto");
-//		for (String tempProdutoString : produtoIdString) {
-//			int tempIdProduto = Integer.parseInt(tempProdutoString);
-//			Produto produto = produtoDbUtil.getProduto(tempIdProduto);
-//			listagemProdutos.add(produto);
-//
-//		}
-//
-//		Fornecedor fornecedor = new Fornecedor(nomeFornecedor, dataContrato);
-//		fornecedor.setListagemProdutos(listagemProdutos);
-//		fornecedor.setIdFornecedor(idFornecedor);
-//
-//		fornecedorDbUtil.deleteRelationship(fornecedor.getIdFornecedor());
-//
-//		fornecedorDbUtil.updateFornecedor(fornecedor);
-//
-//		listFornecedores(request, response);
 
 		String jsonUpdateFornecedor = HttpUtil.getBody(request);
 
@@ -218,7 +189,7 @@ public class FornecedorControllerServlet extends HttpServlet {
 		Fornecedor fornecedorDoJson = gson.fromJson(jsonUpdateFornecedor, Fornecedor.class);
 
 		
-		ValidationError validation = validateFornecedorInput(fornecedorDoJson.getNomeFornecedor());
+		ValidationError validation = validateFornecedorInputUpdate(fornecedorDoJson.getNomeFornecedor());
 
 		if (validation.isValid()) {
 			Date dataContrato = fornecedorDoJson.getDataContrato();
@@ -294,7 +265,7 @@ public class FornecedorControllerServlet extends HttpServlet {
 		Fornecedor fornecedorDoJson = gson.fromJson(jsonAddFornecedor, Fornecedor.class);
 
 		
-		ValidationError validation = validateFornecedorInputUpdate(fornecedorDoJson.getNomeFornecedor());
+		ValidationError validation = validateFornecedorInput(fornecedorDoJson.getNomeFornecedor());
 
 		if (validation.isValid()) {
 			Date dataContrato = fornecedorDoJson.getDataContrato();

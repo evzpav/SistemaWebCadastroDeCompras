@@ -11,6 +11,7 @@ public class Fornecedor {
 	private int idFornecedor;
 	private List <Produto> listagemProdutos;
 	private List <Integer> listagemIdProdutos;
+	private Double totalEmCompras;
 	
 	
 	public Fornecedor(String nome, Date dataContrato) {
@@ -99,6 +100,18 @@ public class Fornecedor {
 
 	public void setListagemIdProdutos(List <Integer> listagemIdProdutos) {
 		this.listagemIdProdutos = listagemIdProdutos;
+	}
+
+
+
+	public Double getTotalEmCompras() {
+		return totalEmCompras;
+	}
+
+
+
+	public void setTotalEmCompras(Double totalEmCompras) {
+		this.totalEmCompras = totalEmCompras;
 	}
 
 

@@ -457,4 +457,46 @@ public class FornecedorDbUtil {
 		return false;
 	}
 
+	public List<Fornecedor> getTopFornecedoresWithCompra() throws SQLException {
+		Connection myConn = null;
+		Statement myStmt = null;
+		ResultSet myRs = null;
+
+		try {
+			myConn = dataSource.getConnection();
+
+			String sql = "select fornecedor.id_fornecedor, nome_fornecedor, sum(valor_total) as total_compra "
+					+ "from compra join fornecedor on compra.id_fornecedor = fornecedor.id_fornecedor "
+					+ "group by fornecedor.id_fornecedor "
+					+ "order by total_compra desc "
+					+ "limit 5";
+
+			myStmt = myConn.createStatement();
+
+			myRs = myStmt.executeQuery(sql);
+			List<Fornecedor> listaDeFornecedores = new ArrayList<Fornecedor>();
+
+			Fornecedor fornecedor = null;
+
+			while (myRs.next()) {
+
+				int idFornecedor = myRs.getInt("id_fornecedor");
+				String nomeFornecedor = myRs.getString("nome_fornecedor");
+				Double totalEmCompras = myRs.getDouble("total_compra");
+				
+					fornecedor = new Fornecedor(nomeFornecedor, null);
+					fornecedor.setIdFornecedor(idFornecedor);
+					fornecedor.setTotalEmCompras(totalEmCompras);
+					
+				listaDeFornecedores.add(fornecedor);
+			}
+
+			return listaDeFornecedores;
+
+		} finally {
+			close(myConn, myStmt, myRs);
+
+		}
+	}
+
 }

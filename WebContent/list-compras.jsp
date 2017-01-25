@@ -9,7 +9,7 @@
 
 <title>Cadastro de Compras</title>
 
-<jsp:include page= "js-css-files.jsp" />
+
 
 
 </head>
@@ -145,12 +145,11 @@
 	
 
 		<jsp:include page= "footer.jsp"/>
+		
 	</div>
+	<jsp:include page= "js-css-files.jsp" />
 </body>
 
-<script type="text/javascript">
-     
-    </script>
 
 </html>
 

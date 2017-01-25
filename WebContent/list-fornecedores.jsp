@@ -9,7 +9,7 @@
 
 <title>Cadastro de Fornecedores</title>
 
-<jsp:include page= "js-css-files.jsp" />
+
 
 </head>
 
@@ -103,7 +103,7 @@
 		<jsp:include page= "footer.jsp"/>
 	</div>
 	
-	
+	<jsp:include page= "js-css-files.jsp" />
 	<script type="text/javascript">
 				
 		$(".linkDelete").click(function(event){
@@ -145,6 +145,7 @@
 	
 	
 	</script>
+	
 </body>
 
 

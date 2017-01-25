@@ -158,11 +158,12 @@ public class CompraControllerServlet extends HttpServlet {
 		} else {
 
 			Date dataInicial = ConvertDate.convertStringToDate(dataInicialString);
-			java.sql.Date dataInicialSql = new java.sql.Date(dataInicial.getTime());
+			
+			java.sql.Date dataInicialSql = ConvertDate.convertDateToSqlDate(dataInicial);
 
 			Date dataFinal = ConvertDate.convertStringToDate(dataFinalString);
 
-			java.sql.Date dataFinalSql = new java.sql.Date(dataFinal.getTime());
+			java.sql.Date dataFinalSql = ConvertDate.convertDateToSqlDate(dataFinal);
 
 			compras = compraDbUtil.filterListaCompra(idFornecedor, dataInicialSql, dataFinalSql);
 		}
@@ -175,6 +176,8 @@ public class CompraControllerServlet extends HttpServlet {
 
 		dispatcher.forward(request, response);
 	}
+
+	
 
 	private void addCompra(HttpServletRequest request, HttpServletResponse response) throws Exception {
 

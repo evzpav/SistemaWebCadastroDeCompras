@@ -16,7 +16,6 @@ import javax.sql.DataSource;
 import com.google.gson.Gson;
 
 import br.com.solvus.dao.ProdutoDbUtil;
-import br.com.solvus.model.DadosTabelaAddCompra;
 import br.com.solvus.model.Produto;
 import br.com.solvus.util.HttpUtil;
 import br.com.solvus.util.ValidationError;
@@ -58,6 +57,11 @@ public class ProdutoControllerServlet extends HttpServlet {
 				listProdutos(request, response);
 
 				break;
+				
+			case "IR_PARA_ADD_PRODUTO":
+				showAddProduto(request, response);
+
+				break;
 
 			case "LOAD":
 				loadProduto(request, response);
@@ -79,6 +83,14 @@ public class ProdutoControllerServlet extends HttpServlet {
 			throw new ServletException(exc);
 		}
 
+	}
+
+	private void showAddProduto(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/add-produto-form.jsp");
+
+		dispatcher.forward(request, response);
+		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -234,6 +246,7 @@ public class ProdutoControllerServlet extends HttpServlet {
 			HttpUtil.sendJsonToJsp(response, validation);
 			System.out.println("Mensagem: " + validation.getMsg());
 		}
+		
 	}
 
 	public ValidationError validateProdutoInput(String inputName) throws SQLException {

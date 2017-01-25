@@ -48,7 +48,7 @@
 				
 					
 			
-					
+			<div class="row">
 				<div class="container" id="bigDivCheckbox">
 					<label class="fornLabel">Produtos:</label>
 					
@@ -77,7 +77,7 @@
 						
 										
 				</div>		
-					
+			</div>	
 				
 					<div class="col-xs-4 divLabelProduto">	
 						<button type="submit" class="botaoSalvar btn btn-primary btn-lg">Salvar</button>

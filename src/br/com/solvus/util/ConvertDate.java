@@ -25,6 +25,11 @@ public class ConvertDate {
 
 		return convertedDate;
 	}
+	
+	public static java.sql.Date convertDateToSqlDate(Date date) {
+		java.sql.Date dataSql = new java.sql.Date(date.getTime());
+		return dataSql;
+	}
 
 	
 }

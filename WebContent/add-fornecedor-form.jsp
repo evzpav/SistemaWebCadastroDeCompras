@@ -47,26 +47,27 @@
 
 
 
+			<div class="row">
+				<div class="container" id="bigDivCheckbox">
+			
+					<label class="fornLabel">Produtos:</label>
+					<c:forEach var="tempProduto" items="${PRODUTOS_LIST}">
+	
+	
+						<div id="divCheckbox">
+							<label class="form-check"> <input type="checkbox"
+								class="form-check-input regular-checkbox" name="${tempProduto.idProduto}"
+								value="${tempProduto.idProduto}"> <span>${tempProduto.nomeProduto}</span>
+							</label>
+	
+	
+						</div>
+	
+	
+					</c:forEach>
 
-			<div class="container" id="bigDivCheckbox">
-				<label class="fornLabel">Produtos:</label>
-				<c:forEach var="tempProduto" items="${PRODUTOS_LIST}">
-
-
-					<div id="divCheckbox">
-						<label class="form-check"> <input type="checkbox"
-							class="form-check-input regular-checkbox" name="${tempProduto.idProduto}"
-							value="${tempProduto.idProduto}"> <span>${tempProduto.nomeProduto}</span>
-						</label>
-
-
-					</div>
-
-
-				</c:forEach>
-
+				</div>
 			</div>
-
 
 			<div class="col-xs-4 divLabelProduto">
 				<button class="botaoSalvar btn btn-primary btn-lg" id="botaoSalvar">Salvar</button>

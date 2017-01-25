@@ -5,7 +5,7 @@
 
 <head>
 
-<jsp:include page= "js-css-files.jsp" />
+
 
 <title>Lista de Produtos</title>
 
@@ -35,7 +35,7 @@
 
 
 
-				<a href="/teste-programador1-web/add-produto-form.jsp" class="botaoAdicionar btn btn-primary btn-lg active" role="button" aria-pressed="true">Adicionar Produto</a>
+				<a href="ProdutoControllerServlet?command=IR_PARA_ADD_PRODUTO" class="botaoAdicionar btn btn-primary btn-lg active" role="button" aria-pressed="true">Adicionar Produto</a>
 
 
 				<table class="table table-striped">
@@ -77,7 +77,7 @@
 	<jsp:include page= "footer.jsp"/>
 	</div>
 	</div>
-	
+	<jsp:include page= "js-css-files.jsp" />
 	<script type="text/javascript">
 				
 		$(".linkDelete").click(function(event){
