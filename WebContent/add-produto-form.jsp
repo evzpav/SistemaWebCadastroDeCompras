@@ -2,16 +2,18 @@
 <!DOCTYPE html>
 <html>
 <head>
+<jsp:include page= "js-css-files-bootstrap3.jsp" />
 <title>Adicionar Produtos</title>
 
-<jsp:include page="js-css-files.jsp"  />
+
 
 
 
 </head>
 
 <body>
-
+	
+	
 	<div class="container-fluid">
 		<jsp:include page="header.jsp" />
 
@@ -22,27 +24,34 @@
 		</div>
 		
 		<div id="alerta"></div>
-
-		<form id="myForm" name="myForm" action="ProdutoControllerServlet" method="POST">
-			<input type="hidden" name="command" value="ADD" />
-
-
-			<div class="col-xs-4 divLabelProduto">
-				<label>Nome do Produto: </label> <input id="nomeProduto" class="form-control"
-					type="text" name="nomeProduto" placeholder="produto" />
-
-
-				<button id="botaoSalvar" type="" class="botaoSalvar btn btn-primary btn-lg">Salvar</button>
-				<button type="reset" class="botaoCancelar btn btn-secondary btn-lg"
-					onclick="window.location.href='ProdutoControllerServlet'">Cancelar</button>
-			</div>
-
-		</form>
-
-
-		<jsp:include page="footer.jsp" />
-
+		
+		<div class="row">
+			
+			<form id="myForm" name="myForm" action="ProdutoControllerServlet" method="POST">
+				<input type="hidden" name="command" value="ADD" />
+	
+	
+				<div class="col-xs-4 divLabelProduto">
+					<label>Nome do Produto: </label> <input id="nomeProduto" class="form-control"
+						type="text" name="nomeProduto" placeholder="produto" />
+	
+	
+					<button id="botaoSalvar" type="" class="botaoSalvar btn btn-primary btn-lg">Salvar</button>
+					<button type="reset" class="botaoCancelar btn btn-secondary btn-lg"
+						onclick="window.location.href='ProdutoControllerServlet'">Cancelar</button>
+				</div>
+		
+			
+			</form>
+		</div>
+		
+		<div class="row">
+			<jsp:include page="footer.jsp" />
+		</div>
+		
 	</div>
+	
+
 	
 	<script type="text/javascript">
 

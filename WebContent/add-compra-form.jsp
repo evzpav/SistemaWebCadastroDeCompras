@@ -6,13 +6,14 @@
 <html>
 
 <head>
-
+<jsp:include page= "js-css-files-bootstrap3.jsp" />
 <title>Adicionar Compra</title>
 
-<jsp:include page="js-css-files.jsp" />
+
+
+
 
 </head>
-
 <body>
 	<div class="container-fluid">
 		<jsp:include page="header.jsp" />
@@ -20,7 +21,7 @@
 
 		<div class="jumbotron jumbotron-fluid">
 			<div class="container">
-				<h1 class="display-4">Registro de Compra</h1>
+				<h1 class="display-4">Adicionar Compra</h1>
 			</div>
 
 		</div>
@@ -89,45 +90,49 @@
 								aria-pressed="true">Adicionar Item</button>
 						</div>
 					</div>
-
-					<table class="table table-striped">
-						<thead>
-							<tr>
-
-								<th>Nome Produto</th>
-								<th>Quantidade</th>
-								<th>Valor Unitario</th>
-								<th>Valor Total Item</th>
-								<th>Action</th>
-
-							</tr>
-						<thead>
-						<tbody id="table_div">
-
-						</tbody>
-					</table>
-
-					<div>
-						<label id="valorTotalLabel"
-							class="fornLabel col-xs-2 divLabelProduto">Valor Total da
-							Compra:</label> <label id="valorTotal"
-							class="fornLabel col-xs-2 divLabelProduto"></label>
+					
+					<div class="row">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+	
+									<th>Nome Produto</th>
+									<th>Quantidade</th>
+									<th>Valor Unitario</th>
+									<th>Valor Total Item</th>
+									<th>Action</th>
+	
+								</tr>
+							<thead>
+							<tbody id="table_div">
+	
+							</tbody>
+						</table>
+	
+						<div>
+							<label id="valorTotalLabel"
+								class="fornLabel col-xs-2 divLabelProduto">Valor Total da
+								Compra:</label> <label id="valorTotal"
+								class="fornLabel col-xs-2 divLabelProduto"></label>
+						</div>
+	
+						<div class="col-xs-4 divLabelProduto">
+							<button type="submit" class="botaoSalvar btn btn-primary btn-lg">Salvar
+								Compra</button>
+							<button type="reset"
+								class="botaoCancelar btn btn-secondary btn-lg"
+								onclick="window.location.href='CompraControllerServlet'">Cancelar</button>
+						</div>
 					</div>
-
-					<div class="col-xs-4 divLabelProduto">
-						<button type="submit" class="botaoSalvar btn btn-primary btn-lg">Salvar
-							Compra</button>
-						<button type="reset"
-							class="botaoCancelar btn btn-secondary btn-lg"
-							onclick="window.location.href='CompraControllerServlet'">Cancelar</button>
-					</div>
+					<jsp:include page="footer.jsp" />
 			</div>
 			</form>
 
 		</div>
 
-		<jsp:include page="footer.jsp" />
+	
 	</div>
+	
 </body>
 
 

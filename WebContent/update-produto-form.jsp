@@ -3,7 +3,7 @@
 <head>
 	<title> Editar Produtos</title>
 	
-<jsp:include page= "js-css-files.jsp" />
+<jsp:include page= "js-css-files-bootstrap3.jsp" />
 
 
 </head>

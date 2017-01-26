@@ -6,6 +6,7 @@
 <html>
 
 <head>
+<jsp:include page= "js-css-files-bootstrap3.jsp" />
 
 <title>Cadastro de Fornecedores</title>
 
@@ -17,13 +18,13 @@
 	<div class="container-fluid">
 			<jsp:include page= "header.jsp"/>
 	
-
-		<div class="jumbotron jumbotron-fluid">
-			<div class="container">
-				<h1 class="display-4">Lista de Fornecedores</h1>
+		
+			<div class="jumbotron jumbotron-fluid">
+				<div class="container">
+					<h1 class="display-4">Lista de Fornecedores</h1>
+				</div>
+	
 			</div>
-
-		</div>
 		
 	<div id="alerta"></div>
 
@@ -31,27 +32,27 @@
 
 			<div id="content">
 
-
+			
 
 				<form action="" method="GET">
 					
 					
-					<button href="/teste-programador1-web/add-fornecedor-form.jsp" type="submit"
-						class="botaoAdicionar btn btn-primary btn-lg active" role="button" name="command" value="IR_PARA_ADICIONAR_FORNECEDOR"
-						aria-pressed="true">Adicionar Fornecedor</button>
-				
+						<button href="/teste-programador1-web/add-fornecedor-form.jsp" type="submit"
+							class="botaoAdicionar btn btn-primary btn-lg active" role="button" name="command" value="IR_PARA_ADICIONAR_FORNECEDOR"
+							aria-pressed="true">Adicionar Fornecedor</button>
+					
 
 				</form>
+			
 
-
-
-
-				<table class="table table-striped sortable">
+				
+			<div class="divTabelas">
+				<table class="table table-responsive table-striped sortable" >
 					<thead>
 						<tr>
 							<th data-defaultsort="disabled">ID Fornecedor</th>
-							<th>Nome Fornecedor</th>
-							<th>Data de Contrato</th>
+							<th >Nome Fornecedor</th>
+							<th >Data de Contrato</th>
 							<th data-defaultsort="disabled">Produtos</th>
 							<th data-defaultsort="disabled">Action</th>
 
@@ -94,16 +95,23 @@
 						</c:forEach>
 					</tbody>
 				</table>
-
+			</div>	
+			
+			<div class="row">
+						<jsp:include page= "footer.jsp"/>
+			</div>
 			</div>
 
+			
 		</div>
 	
 
-		<jsp:include page= "footer.jsp"/>
+		
 	</div>
 	
-	<jsp:include page= "js-css-files.jsp" />
+
+
+	
 	<script type="text/javascript">
 				
 		$(".linkDelete").click(function(event){

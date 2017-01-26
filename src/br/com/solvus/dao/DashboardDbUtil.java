@@ -351,7 +351,7 @@ public class DashboardDbUtil {
 	
 			myConn = dataSource.getConnection();
 
-			String sql = "select fornecedor.id_fornecedor, nome_fornecedor, sum(valor_total) as total_compra from compra "
+			String sql = "select fornecedor.id_fornecedor, nome_fornecedor, round(sum(valor_total)) as total_compra from compra "
 					+ " join fornecedor on compra.id_fornecedor = fornecedor.id_fornecedor "
 					+ " join itemdecompra on compra.id_compra=itemdecompra.id_compra "
 					+ sqlTabelaTopFornecedores

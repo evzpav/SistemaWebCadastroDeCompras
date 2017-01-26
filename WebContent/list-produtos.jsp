@@ -5,6 +5,7 @@
 
 <head>
 
+<jsp:include page= "js-css-files-bootstrap3.jsp" />
 
 
 <title>Lista de Produtos</title>
@@ -37,8 +38,8 @@
 
 				<a href="ProdutoControllerServlet?command=IR_PARA_ADD_PRODUTO" class="botaoAdicionar btn btn-primary btn-lg active" role="button" aria-pressed="true">Adicionar Produto</a>
 
-
-				<table class="table table-striped">
+			<div class="divTabelas">
+				<table class="table table-responsive table-striped col-6">
 					<thead>
 						<tr>
 					
@@ -77,7 +78,7 @@
 	<jsp:include page= "footer.jsp"/>
 	</div>
 	</div>
-	<jsp:include page= "js-css-files.jsp" />
+	
 	<script type="text/javascript">
 				
 		$(".linkDelete").click(function(event){

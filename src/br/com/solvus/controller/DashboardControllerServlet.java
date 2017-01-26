@@ -148,7 +148,7 @@ public class DashboardControllerServlet extends HttpServlet {
 		List<GraphProdutoDTO> listLinesGraphProdutoDTO = dashboardDbUtil.filtrarGraficoPercentualProduto(arrayIdFornecedores, idProduto, dataInicial, dataFinal);
 		List<GraphVolumeMensalProdutoDTO> listLinesGraphVolumeMensalProdutoDTO = dashboardDbUtil.filtrarGraficoBarraVolumeMensalProduto(arrayIdFornecedores, idProduto, dataInicial, dataFinal);
 		List<TableTopFornecedoresDTO> listLinesTopFornecedoresDTO = dashboardDbUtil.filtrarTabelaTopFornecedores(arrayIdFornecedores, idProduto, dataInicial, dataFinal);
-		
+
 		DashboardDTO dashboardDTO = new DashboardDTO(listLinesGraphFornecedorDTO, listLinesGraphProdutoDTO, listLinesGraphVolumeMensalProdutoDTO, listLinesTopFornecedoresDTO);
 		
 		String jsonDashboardDTO = new Gson().toJson(dashboardDTO);

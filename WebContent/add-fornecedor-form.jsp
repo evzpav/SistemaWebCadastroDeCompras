@@ -5,8 +5,7 @@
 <html>
 <head>
 
-<jsp:include page="js-css-files.jsp" />
-
+<jsp:include page= "js-css-files-bootstrap3.jsp" />
 
 <title>Adicionar Fornecedor</title>
 
@@ -27,23 +26,23 @@
 
 
 		<div id="alerta"></div>
-
-		<form id="myForm" name="myForm" action=""
-			method="POST">
-			<input type="hidden" name="command" value="ADD" />
-
-			<div class="col-xs-4 divLabelFornecedor">
-				<label class="fornLabel ">Nome do Fornecedor: </label> <input
-					type="text" class="form-control" name="nomeFornecedor"
-					id="nomeFornecedor" />
-			</div>
-
-			<div class="col-xs-4 divLabelDatePicker">
-				<label class="fornLabel">Data do Contrato: </label> <input
-					type="text" class="form-control datepicker" name="dataContrato"
-					id="dataContrato">
-			</div>
-
+		
+		<div class="row">
+			<form id="myForm" name="myForm" action=""	method="POST">
+				<input type="hidden" name="command" value="ADD" />
+	
+				<div class="col-lg-4 col-xs-12  divLabelFornecedor">
+					<label class="fornLabel ">Nome do Fornecedor: </label> <input
+						type="text" class="form-control" name="nomeFornecedor"
+						id="nomeFornecedor" />
+				</div>
+	
+				<div class="col-lg-4 col-xs-12  divLabelDatePicker">
+					<label class="fornLabel">Data do Contrato: </label> <input
+						type="text" class="form-control datepicker" name="dataContrato"
+						id="dataContrato">
+				</div>
+		</div>
 
 
 
@@ -56,7 +55,7 @@
 	
 						<div id="divCheckbox">
 							<label class="form-check"> <input type="checkbox"
-								class="form-check-input regular-checkbox" name="${tempProduto.idProduto}"
+								class="form-check-input" name="${tempProduto.idProduto}"
 								value="${tempProduto.idProduto}"> <span>${tempProduto.nomeProduto}</span>
 							</label>
 	
@@ -68,26 +67,23 @@
 
 				</div>
 			</div>
-
-			<div class="col-xs-4 divLabelProduto">
-				<button class="botaoSalvar btn btn-primary btn-lg" id="botaoSalvar">Salvar</button>
-				<button type="reset" class="botaoCancelar btn btn-secondary btn-lg"
-					onclick="window.location.href='FornecedorControllerServlet'">Cancelar</button>
+			
+			<div class="row">
+				<div class="col-xs-4 divLabelProduto">
+					<button class="botaoSalvar btn btn-primary btn-lg" id="botaoSalvar">Salvar</button>
+					<button type="reset" class="botaoCancelar btn btn-secondary btn-lg"
+						onclick="window.location.href='FornecedorControllerServlet'">Cancelar</button>
+				</div>
 			</div>
-
-
-
-
-		</form>
-
-
-
-
-
-
+			</form>
+			
+			<div class="row">
 
 		<jsp:include page="footer.jsp" />
+			</div>
 	</div>
+
+
 
 	<script type="text/javascript">
 	

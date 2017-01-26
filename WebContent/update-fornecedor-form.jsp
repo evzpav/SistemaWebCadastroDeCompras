@@ -5,9 +5,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+<jsp:include page= "js-css-files-bootstrap3.jsp" />
 	<title> Editar Fornecedor</title>
 	
-<jsp:include page= "js-css-files.jsp" />
+
 
 
   
@@ -28,25 +29,27 @@
  
 <div id="alerta"></div>
 
-	<form action="" method="GET">
-		<input type="hidden" name="command" value="UPDATE"/>
 	
-		<input type="hidden" name="idFornecedor" id="idFornecedor" value="${FORNECEDOR_UPDATE.idFornecedor}"/>
-	
-		<div class="col-xs-4 divLabelFornecedor">	
-					<label class="fornLabel ">Nome do Fornecedor: </label>
-					<input type="text" class="form-control" name="nomeFornecedor" id="nomeFornecedor" value="${FORNECEDOR_UPDATE.nomeFornecedor}"/>
-			</div>
+		<div class="row">
+			<form action="" method="GET">
+				<input type="hidden" name="command" value="UPDATE"/>
 			
-			<div class="col-xs-4 divLabelDatePicker">		
-					<label class="fornLabel">Data do Contrato: </label>
-					<input type="text" class="form-control datepicker" id="dataContrato" name="dataContrato" value="<fmt:formatDate value="${FORNECEDOR_UPDATE.dataContrato}"
-										pattern="dd/MM/yyyy" />" >
-						
-			</div>						
+				<input type="hidden" name="idFornecedor" id="idFornecedor" value="${FORNECEDOR_UPDATE.idFornecedor}"/>
+			
+				<div class="col-lg-4 col-xs-12 divLabelFornecedor">	
+							<label class="fornLabel ">Nome do Fornecedor: </label>
+							<input type="text" class="form-control" name="nomeFornecedor" id="nomeFornecedor" value="${FORNECEDOR_UPDATE.nomeFornecedor}"/>
+					</div>
+					
+					<div class="col-lg-4 col-xs-12  divLabelDatePicker">		
+							<label class="fornLabel">Data do Contrato: </label>
+							<input type="text" class="form-control datepicker" id="dataContrato" name="dataContrato" value="<fmt:formatDate value="${FORNECEDOR_UPDATE.dataContrato}"
+												pattern="dd/MM/yyyy" />" >
+								
+					</div>						
 					
 				
-					
+		</div>				
 			
 			<div class="row">
 				<div class="container" id="bigDivCheckbox">
@@ -93,7 +96,7 @@
 	
 			<jsp:include page= "footer.jsp"/>
 	</div>
-	
+
 	<script type="text/javascript">
 	
 
